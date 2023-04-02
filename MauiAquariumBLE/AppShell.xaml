@@ -46,13 +46,6 @@
         </ShellContent>
     </FlyoutItem>
 
-    <FlyoutItem Title="Instructions"
-                FlyoutIcon="{StaticResource IconInfo}">
-        <ShellContent ContentTemplate="{DataTemplate pages:InstructionsPage}"
-                      Route="InstructionsPage">
-        </ShellContent>
-    </FlyoutItem>
-
     <FlyoutItem Title="About MauiXAMLBluetoothLE"
                 FlyoutIcon="{StaticResource IconInfo}">
         <ShellContent ContentTemplate="{DataTemplate pages:AboutPage}"
@@ -60,17 +53,4 @@
         </ShellContent>
     </FlyoutItem>
 
-    <FlyoutItem Title="Privacy statement"
-                FlyoutIcon="{StaticResource IconInfo}">
-        <ShellContent ContentTemplate="{DataTemplate pages:PrivacyStatementPage}"
-                      Route="PrivacyStatementPage">
-        </ShellContent>
-    </FlyoutItem>
-
-    <FlyoutItem Title="Battery level"
-                FlyoutIcon="{StaticResource IconBatteryLevel}">
-        <ShellContent ContentTemplate="{DataTemplate pages:BatteryLevelPage}"
-                      Route="BatteryLevelPage">
-        </ShellContent>
-    </FlyoutItem>
 </Shell>

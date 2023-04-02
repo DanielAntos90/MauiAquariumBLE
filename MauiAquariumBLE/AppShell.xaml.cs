@@ -8,9 +8,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(HomeView), typeof(HomeView));
         Routing.RegisterRoute(nameof(ScanDevicesView), typeof(ScanDevicesView));
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
-        Routing.RegisterRoute(nameof(InstructionsPage), typeof(InstructionsPage));
         Routing.RegisterRoute(nameof(AboutPage), typeof(AboutPage));
-        Routing.RegisterRoute(nameof(PrivacyStatementPage), typeof(PrivacyStatementPage));
-        Routing.RegisterRoute(nameof(BatteryLevelPage), typeof(BatteryLevelPage));
     }
 }
