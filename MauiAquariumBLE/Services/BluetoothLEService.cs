@@ -3,6 +3,7 @@
 public class BluetoothLEService
 {
     public BluetoothDevice SelectedBluetoothDevice { get; set; } = new();
+
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
     public IBluetoothLE BluetoothLE { get; private set; }
     public IAdapter Adapter { get; private set; }

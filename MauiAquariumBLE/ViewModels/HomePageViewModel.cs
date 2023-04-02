@@ -1,4 +1,6 @@
-﻿namespace MauiBluetoothBLE.ViewModels;
+﻿using System.Linq;
+
+namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HomePageViewModel : BaseViewModel
 {
@@ -15,6 +17,7 @@ public partial class HomePageViewModel : BaseViewModel
         Title = $"Scan and select device";
 
         BluetoothLEService = bluetoothLEService;
+        DeviceCandidates = new ObservableCollection<BluetoothDevice>(BluetoothLEService.BluetoothDeviceList);
 
         GoToHeartRatePageAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHeartRatePageAsync(devicecandidate));
 
@@ -44,35 +47,18 @@ public partial class HomePageViewModel : BaseViewModel
 
     async Task ScanDevicesAsync()
     {
-        try
+        IsScanning = true;
+        await BluetoothLEService.ScanForDevicesAsync();
+        foreach (var deviceCandidate in BluetoothLEService.BluetoothDeviceList)
         {
-            IsScanning = true;
-            List<BluetoothDevice> deviceCandidates = await BluetoothLEService.ScanForDevicesAsync();
-
-            if (deviceCandidates.Count == 0)
-            {
-                await BluetoothLEService.ShowToastAsync($"Unable to find nearby Bluetooth LE devices. Try again.");
-            }
-
-            if (DeviceCandidates.Count > 0)
-            {
-                DeviceCandidates.Clear();
-            }
-
-            foreach (var deviceCandidate in deviceCandidates)
-            {
-                DeviceCandidates.Add(deviceCandidate);
-            }
+            DeviceCandidates.Add(deviceCandidate);
         }
-        catch (Exception ex)
+        if (DeviceCandidates.Count == 0)
         {
-            Debug.WriteLine($"Unable to get nearby Bluetooth LE devices: {ex.Message}");
-            await Shell.Current.DisplayAlert($"Unable to get nearby Bluetooth LE devices", $"{ex.Message}.", "OK");
-        }
-        finally
-        {
-            IsScanning = false;
-        }
+            await BluetoothLEService.ShowToastAsync($"Unable to find nearby Bluetooth LE devices. Try again.");
+        } 
+
+        IsScanning = false;
 
     }
 
