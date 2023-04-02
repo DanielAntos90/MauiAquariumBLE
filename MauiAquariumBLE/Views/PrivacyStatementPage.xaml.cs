@@ -1,8 +1,8 @@
-namespace MauiXAMLBluetoothLE.Pages;
+namespace MauiBluetoothBLE.Views;
 
-public partial class HomePage : ContentPage
+public partial class PrivacyStatementPage : ContentPage
 {
-	public HomePage(HomePageViewModel viewModel)
+	public PrivacyStatementPage(PrivacyStatementPageViewModel viewModel)
 	{
 		InitializeComponent();
         BindingContext = viewModel;

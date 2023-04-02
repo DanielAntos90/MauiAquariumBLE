@@ -1,7 +1,7 @@
 ﻿
 using System.Text;
 
-namespace MauiXAMLBluetoothLE.ViewModels;
+namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HeartRatePageViewModel : BaseViewModel
 {

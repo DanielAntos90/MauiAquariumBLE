@@ -1,4 +1,4 @@
-﻿namespace MauiXAMLBluetoothLE.ViewModels
+﻿namespace MauiBluetoothBLE.ViewModels
 {
     public partial class PrivacyStatementPageViewModel : BaseViewModel
     {

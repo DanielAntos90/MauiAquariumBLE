@@ -1,4 +1,4 @@
-﻿namespace MauiXAMLBluetoothLE.Services;
+﻿namespace MauiBluetoothBLE.Services;
 
 public class BluetoothLEService
 {

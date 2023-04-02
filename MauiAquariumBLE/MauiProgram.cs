@@ -1,4 +1,4 @@
-﻿namespace MauiXAMLBluetoothLE;
+﻿namespace MauiBluetoothBLE;
 
 public static class MauiProgram
 {

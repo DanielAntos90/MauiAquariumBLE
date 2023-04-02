@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace MauiXAMLBluetoothLE;
+namespace MauiBluetoothBLE;
 
 [Application]
 public class MainApplication : MauiApplication

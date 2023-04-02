@@ -1,4 +1,4 @@
-﻿namespace MauiXAMLBluetoothLE.Models;
+﻿namespace MauiBluetoothBLE.Models;
 
 public class DeviceCandidate
 {

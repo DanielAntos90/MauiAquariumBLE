@@ -1,13 +1,12 @@
-namespace MauiXAMLBluetoothLE.Pages;
+namespace MauiBluetoothBLE.Views;
 
-public partial class InstructionsPage : ContentPage
+public partial class HomePage : ContentPage
 {
-    public InstructionsPage(InstructionsPageViewModel viewModel)
-    {
-        InitializeComponent();
+	public HomePage(HomePageViewModel viewModel)
+	{
+		InitializeComponent();
         BindingContext = viewModel;
     }
-
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);

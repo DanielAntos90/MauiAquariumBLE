@@ -1,4 +1,4 @@
-﻿namespace MauiXAMLBluetoothLE;
+﻿namespace MauiBluetoothBLE;
 
 public partial class AppShell : Shell
 {

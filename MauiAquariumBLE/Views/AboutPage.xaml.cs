@@ -1,10 +1,10 @@
-namespace MauiXAMLBluetoothLE.Pages;
+namespace MauiBluetoothBLE.Views;
 
-public partial class PrivacyStatementPage : ContentPage
+public partial class AboutPage : ContentPage
 {
-	public PrivacyStatementPage(PrivacyStatementPageViewModel viewModel)
-	{
-		InitializeComponent();
+    public AboutPage(AboutPageViewModel viewModel)
+    {
+        InitializeComponent();
         BindingContext = viewModel;
     }
     protected override void OnNavigatedTo(NavigatedToEventArgs args)

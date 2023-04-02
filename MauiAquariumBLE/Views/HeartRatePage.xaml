@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiXAMLBluetoothLE.Pages.HeartRatePage"
+             x:Class="MauiBluetoothBLE.Views.HeartRatePage"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              ios:Page.UseSafeArea="True"
-             xmlns:viewmodel="clr-namespace:MauiXAMLBluetoothLE.ViewModels"
+             xmlns:viewmodel="clr-namespace:MauiBluetoothBLE.ViewModels"
              x:DataType="viewmodel:HeartRatePageViewModel"
              Title="{Binding Title}">
 

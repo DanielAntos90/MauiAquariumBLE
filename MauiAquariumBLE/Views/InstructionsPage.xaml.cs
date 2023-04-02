@@ -1,12 +1,13 @@
-namespace MauiXAMLBluetoothLE.Pages;
+namespace MauiBluetoothBLE.Views;
 
-public partial class HeartRatePage : ContentPage
+public partial class InstructionsPage : ContentPage
 {
-	public HeartRatePage(HeartRatePageViewModel viewModel)
-	{
-		InitializeComponent();
+    public InstructionsPage(InstructionsPageViewModel viewModel)
+    {
+        InitializeComponent();
         BindingContext = viewModel;
     }
+
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);

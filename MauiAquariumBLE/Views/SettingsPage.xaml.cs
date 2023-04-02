@@ -1,4 +1,4 @@
-namespace MauiXAMLBluetoothLE.Pages;
+namespace MauiBluetoothBLE.Views;
 
 public partial class SettingsPage : ContentPage
 {

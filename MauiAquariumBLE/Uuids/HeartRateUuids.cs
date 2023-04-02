@@ -1,4 +1,4 @@
-﻿namespace MauiXAMLBluetoothLE.Uuids;
+﻿namespace MauiBluetoothBLE.Uuids;
 
 public class HeartRateUuids
 {

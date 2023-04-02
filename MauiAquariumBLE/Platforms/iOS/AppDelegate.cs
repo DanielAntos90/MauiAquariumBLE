@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace MauiXAMLBluetoothLE;
+namespace MauiBluetoothBLE;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
