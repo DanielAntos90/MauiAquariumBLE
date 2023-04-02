@@ -1,25 +1,23 @@
 ﻿
+using MauiBluetoothBLE.Services;
 using System.Text;
 
 namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HomeViewModel : BaseViewModel
 {
-    public BluetoothLEService BluetoothLEService { get; private set; }
-
     public IAsyncRelayCommand ConnectToDeviceCandidateAsyncCommand { get; }
     public IAsyncRelayCommand DisconnectFromDeviceAsyncCommand { get; }
 
-    public IService HeartRateService { get; private set; }
-    public ICharacteristic HeartRateMeasurementCharacteristic { get; private set; }
-    private string _fullValue;
+    BluetoothLEService BluetoothLEService;
+
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
-        Title = $"Heart rate";
+        Title = $"Home";
 
         BluetoothLEService = bluetoothLEService;
 
-        ConnectToDeviceCandidateAsyncCommand = new AsyncRelayCommand(ConnectToDeviceCandidateAsync);
+        ConnectToDeviceCandidateAsyncCommand = new AsyncRelayCommand(ConnectToDeviceCandidateAsync );
 
         DisconnectFromDeviceAsyncCommand = new AsyncRelayCommand(DisconnectFromDeviceAsync);
     }
@@ -32,131 +30,8 @@ public partial class HomeViewModel : BaseViewModel
 
     private async Task ConnectToDeviceCandidateAsync()
     {
-        if (IsBusy)
-        {
-            return;
-        }
-
-        if (BluetoothLEService.SelectedBluetoothDevice.Id.Equals(Guid.Empty))
-        {
-            #region read device id from storage
-            var device_name = await SecureStorage.Default.GetAsync("device_name");
-            var device_id = await SecureStorage.Default.GetAsync("device_id");
-            if (!string.IsNullOrEmpty(device_id))
-            {
-                BluetoothLEService.SelectedBluetoothDevice.Name = device_name;
-                BluetoothLEService.SelectedBluetoothDevice.Id = Guid.Parse(device_id);
-            }
-            #endregion read device id from storage
-            else
-            {
-                await BluetoothLEService.ShowToastAsync($"Select a Bluetooth LE device first. Try again.");
-                return;
-            }
-        }
-
-        if (!BluetoothLEService.BluetoothLE.IsOn)
-        {
-            await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
-            return;
-        }
-
-        if (BluetoothLEService.Adapter.IsScanning)
-        {
-            await BluetoothLEService.ShowToastAsync($"Bluetooth adapter is scanning. Try again.");
-            return;
-        }
-
-        try
-        {
-            IsBusy = true;
-
-            if (BluetoothLEService.Device != null)
-            {
-                if (BluetoothLEService.Device.State == DeviceState.Connected)
-                {
-                    if (BluetoothLEService.Device.Id.Equals(BluetoothLEService.SelectedBluetoothDevice.Id))
-                    {
-                        await BluetoothLEService.ShowToastAsync($"{BluetoothLEService.Device.Name} is already connected.");
-                        return;
-                    }
-
-                    if (BluetoothLEService.SelectedBluetoothDevice != null)
-                    {
-                        #region another device
-                        if (!BluetoothLEService.Device.Id.Equals(BluetoothLEService.SelectedBluetoothDevice.Id))
-                        {
-                            Title = $"{BluetoothLEService.SelectedBluetoothDevice.Name}";
-                            await DisconnectFromDeviceAsync();
-                            await BluetoothLEService.ShowToastAsync($"{BluetoothLEService.Device.Name} has been disconnected.");
-                        }
-                        #endregion another device
-                    }
-                }
-            }
-
-            BluetoothLEService.Device = await BluetoothLEService.Adapter.ConnectToKnownDeviceAsync(BluetoothLEService.SelectedBluetoothDevice.Id);
-
-            if (BluetoothLEService.Device.State == DeviceState.Connected)
-            {
-                var services = await BluetoothLEService.Device.GetServicesAsync();
-                HeartRateService = await BluetoothLEService.Device.GetServiceAsync(Uuids.TISensorTagSmartKeys);
-                if (HeartRateService != null)
-                {
-                    var characteristics = await HeartRateService.GetCharacteristicsAsync();
-                    HeartRateMeasurementCharacteristic = await HeartRateService.GetCharacteristicAsync(Uuids.TXRX);
-                    if (HeartRateMeasurementCharacteristic != null)
-                    {
-                        if (HeartRateMeasurementCharacteristic.CanUpdate)
-                        {
-                            Title = $"{BluetoothLEService.Device.Name}";
-
-                            #region save device id to storage
-                            await SecureStorage.Default.SetAsync("device_name", $"{BluetoothLEService.Device.Name}");
-                            await SecureStorage.Default.SetAsync("device_id", $"{BluetoothLEService.Device.Id}");
-                            #endregion save device id to storage 
-
-                            await send();
-
-                            HeartRateMeasurementCharacteristic.ValueUpdated += HeartRateMeasurementCharacteristic_ValueUpdated;
-
-
-                                await HeartRateMeasurementCharacteristic.StartUpdatesAsync(); 
-
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Unable to connect to {BluetoothLEService.SelectedBluetoothDevice.Name} {BluetoothLEService.SelectedBluetoothDevice.Id}: {ex.Message}.");
-            await Shell.Current.DisplayAlert($"{BluetoothLEService.SelectedBluetoothDevice.Name}", $"Unable to connect to {BluetoothLEService.SelectedBluetoothDevice.Name}.", "OK");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    private void HeartRateMeasurementCharacteristic_ValueUpdated(object sender, CharacteristicUpdatedEventArgs e)
-    {
-        string message = Encoding.UTF8.GetString(e.Characteristic.Value);
-        _fullValue += message;
-
-        if (message.Contains("\n"))
-        {
-            // Full value received, process it
-
-            var a = _fullValue; //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
-            _fullValue = null;
-        }
-        Timestamp = DateTimeOffset.Now.LocalDateTime;
-    }
-    private async Task send()
-    {
-        byte[] data = Encoding.UTF8.GetBytes("inputs");
-        await HeartRateMeasurementCharacteristic.WriteAsync(data);
+        await BluetoothLEService.ConnectToDeviceAsync();
+    
     }
 
     private async Task DisconnectFromDeviceAsync()
@@ -194,11 +69,10 @@ public partial class HomeViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            await HeartRateMeasurementCharacteristic.StopUpdatesAsync();
+            //TODO make stopUpdatesAsync as method
+            await BluetoothLEService.BluetoothConnectionCharacteristic.StopUpdatesAsync();
 
-            await BluetoothLEService.Adapter.DisconnectDeviceAsync(BluetoothLEService.Device);
-
-            HeartRateMeasurementCharacteristic.ValueUpdated -= HeartRateMeasurementCharacteristic_ValueUpdated;
+           await BluetoothLEService.Adapter.DisconnectDeviceAsync(BluetoothLEService.Device);
         }
         catch (Exception ex)
         {
@@ -212,7 +86,6 @@ public partial class HomeViewModel : BaseViewModel
             Timestamp = DateTimeOffset.MinValue;
             IsBusy = false;
             BluetoothLEService.Device?.Dispose();
-            BluetoothLEService.Device = null;
             await Shell.Current.GoToAsync("//HomePage", true);
         }
     }

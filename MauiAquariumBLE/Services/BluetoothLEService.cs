@@ -1,15 +1,18 @@
-﻿namespace MauiBluetoothBLE.Services;
+﻿using System.Text;
+
+namespace MauiBluetoothBLE.Services;
 
 public class BluetoothLEService
 {
-    public BluetoothDevice SelectedBluetoothDevice { get; set; } = new();
-
+    public BluetoothDevice SelectedBluetoothDevice { get; private set; } = new();
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
     public IBluetoothLE BluetoothLE { get; private set; }
     public IAdapter Adapter { get; private set; }
-    public IDevice Device { get; set; }
+    public IDevice Device { get; private set; }
+    public IService BluetoothConnectionService { get; private set; }
+    public ICharacteristic BluetoothConnectionCharacteristic { get; private set; }
 
-    private bool IsScanning = false;
+    private string _fullValue;
 
     public BluetoothLEService()
     {
@@ -27,10 +30,7 @@ public class BluetoothLEService
 
     private async Task<bool> IsBluetoothAvailable()
     {
-        if (IsScanning)
-        {
-            return false;
-        } else if(!BluetoothLE.IsAvailable)
+        if(!BluetoothLE.IsAvailable)
         {
             Debug.WriteLine($"Bluetooth is missing.");
             await Shell.Current.DisplayAlert($"Bluetooth", $"Bluetooth is missing.", "OK");
@@ -38,7 +38,7 @@ public class BluetoothLEService
         }
         return true;
     }
-    private async Task<bool> isPermissionGranded()
+    private async Task<bool> IsPermissionGranded()
     {
 #if ANDROID
         PermissionStatus permissionStatus = await CheckBluetoothPermissions();
@@ -65,20 +65,30 @@ public class BluetoothLEService
         }
         return true;
     }
-    public async Task ScanForKnownDeviceAsync()
+
+    private async Task<bool> IsScanning()
+    {
+        if (Adapter.IsScanning)
+        {
+            await ShowToastAsync($"Bluetooth adapter is scanning. Try again.");
+            return true;
+        }
+        return false;
+    }
+    public async Task ScanAndConnectToKnownDeviceAsync()
     {
         try
         {
-            if(!await IsBluetoothAvailable() || !await isPermissionGranded() || !await IsBluetoothOn()) { return; }
-            //if(!await isPermissionGranded()) { return; }
-            //if(!await isPermissionGranded()) { return; }
+            if(!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
 
-            await Adapter.StartScanningForDevicesAsync(Uuids.HM10Service);
+            await SetStoredDevice();
+
+            Device = await Adapter.ConnectToKnownDeviceAsync(SelectedBluetoothDevice.Id);
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Unable to scan known Bluetooth LE devices: {ex.Message}.");
-            await Shell.Current.DisplayAlert($"Unable to scan known Bluetooth LE devices", $"{ex.Message}.", "OK");
+            Debug.WriteLine($"Unable connect to known Bluetooth LE device {Device.Name}. ERROR: {ex.Message}.");
+            await ShowToastAsync($"Unable connect to known Bluetooth LE device {Device.Name}.");
         } 
     }
 
@@ -86,7 +96,7 @@ public class BluetoothLEService
     {
         try
         {
-            if (!await IsBluetoothAvailable() || !await isPermissionGranded() || !await IsBluetoothOn()) { return null; }
+            if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
 
             await Adapter.StartScanningForDevicesAsync();
         }
@@ -97,6 +107,99 @@ public class BluetoothLEService
         }
 
         return BluetoothDeviceList;
+    }
+
+    private async Task SetStoredDevice()
+    {
+
+        if (SelectedBluetoothDevice.Id.Equals(Guid.Empty))
+        {
+            var device_name = await SecureStorage.Default.GetAsync("device_name");
+            var device_id = await SecureStorage.Default.GetAsync("device_id");
+
+            if (!string.IsNullOrEmpty(device_id))
+            {
+                SelectedBluetoothDevice.Name = device_name;
+                SelectedBluetoothDevice.Id = Guid.Parse(device_id);
+            } else
+            {
+                SelectedBluetoothDevice.Id = Uuids.HM10Service;
+            }
+
+        }
+    }
+
+    public async Task ConnectToDeviceAsync()
+    {
+        try
+        {
+            if (Device != null && Device.State == DeviceState.Connected && Device.Id.Equals(SelectedBluetoothDevice.Id))
+            {
+                await ShowToastAsync($"{Device.Name} is already connected.");
+                return;
+            }
+
+            await ScanAndConnectToKnownDeviceAsync();
+
+            if (Device.State == DeviceState.Connected)
+            {
+                BluetoothConnectionService = await Device.GetServiceAsync(Uuids.TISensorTagSmartKeys);
+
+            }
+            else
+            {
+                await ShowToastAsync($"{Device.Name} connection failed.");
+                return;
+            }
+
+            if (BluetoothConnectionService != null)
+            {
+                BluetoothConnectionCharacteristic = await BluetoothConnectionService.GetCharacteristicAsync(Uuids.TXRX);
+            }
+            else
+            {
+                await ShowToastAsync($"{Device.Name} connection failed.");
+                return;
+            }
+
+            if (BluetoothConnectionCharacteristic != null && BluetoothConnectionCharacteristic.CanUpdate)
+            {
+                await SecureStorage.Default.SetAsync("device_name", $"{Device.Name}");
+                await SecureStorage.Default.SetAsync("device_id", $"{Device.Id}");
+
+                BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
+                await BluetoothConnectionCharacteristic.StartUpdatesAsync();
+
+                await Send("inputs");
+
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to connect to  Bluetooth: {ex.Message}");
+            await ShowToastAsync($"{Device.Name} connection failed.");
+        }
+    }
+
+    private void ReceivedData(object sender, CharacteristicUpdatedEventArgs e)
+    {
+        string message = Encoding.UTF8.GetString(e.Characteristic.Value);
+        _fullValue += message;
+
+        if (message.Contains('\n'))
+        {
+            // Full value received, process it
+
+            var a = _fullValue; //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
+            _fullValue = null;
+        }
+    }
+
+    private async Task Send(string message)
+    {
+        byte[] data = Encoding.UTF8.GetBytes(message);
+        await BluetoothConnectionCharacteristic.WriteAsync(data);
     }
 
     #region DeviceEventArgs

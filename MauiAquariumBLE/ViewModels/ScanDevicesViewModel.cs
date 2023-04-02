@@ -17,7 +17,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
         BluetoothLEService = bluetoothLEService;
         DeviceCandidates = new ObservableCollection<BluetoothDevice>(BluetoothLEService.BluetoothDeviceList);
 
-        GoToHeartRatePageAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHeartRatePageAsync(devicecandidate));
+        //GoToHeartRatePageAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHeartRatePageAsync(devicecandidate));
 
         ScanNearbyDevicesAsyncCommand = new AsyncRelayCommand(ScanDevicesAsync);
         CheckBluetoothAvailabilityAsyncCommand = new AsyncRelayCommand(CheckBluetoothAvailabilityAsync);
@@ -36,7 +36,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
             return;
         }
 
-        BluetoothLEService.SelectedBluetoothDevice = deviceCandidate;
+       // BluetoothLEService.SelectedBluetoothDevice = deviceCandidate;
 
         Title = $"{deviceCandidate.Name}";
 
