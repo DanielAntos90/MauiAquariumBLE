@@ -1,8 +1,8 @@
 namespace MauiBluetoothBLE.Views;
 
-public partial class HeartRatePage : ContentPage
+public partial class HomeView : ContentPage
 {
-	public HeartRatePage(HeartRatePageViewModel viewModel)
+	public HomeView(HomeViewModel viewModel)
 	{
 		InitializeComponent();
         BindingContext = viewModel;

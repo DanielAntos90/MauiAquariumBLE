@@ -25,11 +25,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<IGeolocation>(Geolocation.Default);
         builder.Services.AddSingleton<IMap>(Map.Default);
 
+        builder.Services.AddSingleton<HomeViewModel>();
+        builder.Services.AddSingleton<HomeView>();
+
         builder.Services.AddSingleton<ScanDevicesViewModel>();
         builder.Services.AddSingleton<ScanDevicesView>();
-
-        builder.Services.AddSingleton<HeartRatePageViewModel>();
-        builder.Services.AddSingleton<HeartRatePage>();
 
         builder.Services.AddSingleton<SettingsPageViewModel>();
         builder.Services.AddSingleton<SettingsPage>();

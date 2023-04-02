@@ -3,7 +3,7 @@ using System.Text;
 
 namespace MauiBluetoothBLE.ViewModels;
 
-public partial class HeartRatePageViewModel : BaseViewModel
+public partial class HomeViewModel : BaseViewModel
 {
     public BluetoothLEService BluetoothLEService { get; private set; }
 
@@ -13,7 +13,7 @@ public partial class HeartRatePageViewModel : BaseViewModel
     public IService HeartRateService { get; private set; }
     public ICharacteristic HeartRateMeasurementCharacteristic { get; private set; }
     private string _fullValue;
-    public HeartRatePageViewModel(BluetoothLEService bluetoothLEService)
+    public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Heart rate";
 

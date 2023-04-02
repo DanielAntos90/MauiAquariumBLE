@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiBluetoothBLE.Views.HeartRatePage"
+             x:Class="MauiBluetoothBLE.Views.HomeView"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              ios:Page.UseSafeArea="True"
              xmlns:viewmodel="clr-namespace:MauiBluetoothBLE.ViewModels"
-             x:DataType="viewmodel:HeartRatePageViewModel"
+             x:DataType="viewmodel:HomeViewModel"
              Title="{Binding Title}">
 
     <Grid x:Name="HeartRatePageGrid"
