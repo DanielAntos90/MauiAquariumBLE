@@ -2,11 +2,13 @@
 
 public class BluetoothLEService
 {
-    public BluetoothDevice NewDeviceCandidateFromHomePage { get; set; } = new();
-    public List<BluetoothDevice> DeviceCandidateList { get; private set; }
+    public BluetoothDevice SelectedBluetoothDevice { get; set; } = new();
+    public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
     public IBluetoothLE BluetoothLE { get; private set; }
     public IAdapter Adapter { get; private set; }
     public IDevice Device { get; set; }
+
+    private bool IsScanning = false;
 
     public BluetoothLEService()
     {
@@ -14,7 +16,7 @@ public class BluetoothLEService
         Adapter = CrossBluetoothLE.Current.Adapter;
         Adapter.ScanTimeout = 4000;
 
-        Adapter.DeviceDiscovered += Adapter_DeviceDiscovered;
+        Adapter.DeviceDiscovered += DeviceDiscovered;
         Adapter.DeviceConnected += Adapter_DeviceConnected;
         Adapter.DeviceDisconnected += Adapter_DeviceDisconnected;
         Adapter.DeviceConnectionLost += Adapter_DeviceConnectionLost;
@@ -22,49 +24,86 @@ public class BluetoothLEService
         BluetoothLE.StateChanged += BluetoothLE_StateChanged;
     }
 
-    public async Task<List<BluetoothDevice>> ScanForDevicesAsync()
+    private async Task<bool> IsBluetoothAvailable()
     {
-        DeviceCandidateList = new List<BluetoothDevice>();
-
+        if (IsScanning)
+        {
+            return false;
+        } else if(!BluetoothLE.IsAvailable)
+        {
+            Debug.WriteLine($"Bluetooth is missing.");
+            await Shell.Current.DisplayAlert($"Bluetooth", $"Bluetooth is missing.", "OK");
+            return false;
+        }
+        return true;
+    }
+    private async Task<bool> isPermissionGranded()
+    {
+#if ANDROID
+        PermissionStatus permissionStatus = await CheckBluetoothPermissions();
+        if (permissionStatus != PermissionStatus.Granted)
+        {
+            permissionStatus = await RequestBluetoothPermissions();
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                await Shell.Current.DisplayAlert($"Bluetooth LE permissions", $"Bluetooth LE permissions are not granted.", "OK");
+                return false;
+            }
+        }
+#elif IOS
+#elif WINDOWS
+#endif
+        return true;
+    }
+    private async Task<bool> IsBluetoothOn()
+    {
+        if (!BluetoothLE.IsOn)
+        {
+            await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
+            return false;
+        }
+        return true;
+    }
+    public async Task ScanForKnownDeviceAsync()
+    {
         try
         {
-            IReadOnlyList<IDevice> systemDevices = Adapter.GetSystemConnectedOrPairedDevices(Uuids.HeartRateServiceUuids);
-            foreach (var systemDevice in systemDevices)
-            {
-                BluetoothDevice deviceCandidate = DeviceCandidateList.FirstOrDefault(d => d.Id == systemDevice.Id);
-                if (deviceCandidate == null)
-                {
-                    DeviceCandidateList.Add(new BluetoothDevice
-                    {
-                        Id = systemDevice.Id,
-                        Name = systemDevice.Name,
-                    });
-                    //await ShowToastAsync($"Found {systemDevice.State.ToString().ToLower()} device {systemDevice.Name}.");
-                }
-            }
-            await Adapter.StartScanningForDevicesAsync();//.StartScanningForDevicesAsync(HeartRateUuids.HeartRateServiceUuids);
-         }
+            if(!await IsBluetoothAvailable() || !await isPermissionGranded() || !await IsBluetoothOn()) { return; }
+            //if(!await isPermissionGranded()) { return; }
+            //if(!await isPermissionGranded()) { return; }
+
+            await Adapter.StartScanningForDevicesAsync(Uuids.HM10Service);
+        }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Unable to scan nearby Bluetooth LE devices: {ex.Message}.");
-            await Shell.Current.DisplayAlert($"Unable to scan nearby Bluetooth LE devices", $"{ex.Message}.", "OK");
+            Debug.WriteLine($"Unable to scan known Bluetooth LE devices: {ex.Message}.");
+            await Shell.Current.DisplayAlert($"Unable to scan known Bluetooth LE devices", $"{ex.Message}.", "OK");
+        } 
+    }
+
+    public async Task<List<BluetoothDevice>> ScanForDevicesAsync()
+    {
+        try
+        {
+            if (!await IsBluetoothAvailable() || !await isPermissionGranded() || !await IsBluetoothOn()) { return null; }
+
+            await Adapter.StartScanningForDevicesAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to scan known Bluetooth LE devices: {ex.Message}.");
+            await Shell.Current.DisplayAlert($"Unable to scan known Bluetooth LE devices", $"{ex.Message}.", "OK");
         }
 
-        return DeviceCandidateList;
+        return BluetoothDeviceList;
     }
 
     #region DeviceEventArgs
-    private async void Adapter_DeviceDiscovered(object sender, DeviceEventArgs e)
+    private void DeviceDiscovered(object sender, DeviceEventArgs e)
     {
-        BluetoothDevice deviceCandidate = DeviceCandidateList.FirstOrDefault(d => d.Id == e.Device.Id);
-        if (deviceCandidate == null)
+        if (!BluetoothDeviceList.Any(d => d.Id == e.Device.Id))
         {
-            DeviceCandidateList.Add(new BluetoothDevice
-            {
-                Id = e.Device.Id,
-                Name = e.Device.Name,
-            });
-            //await ShowToastAsync($"Found {e.Device.State.ToString().ToLower()} {e.Device.Name}.");
+            BluetoothDeviceList.Add(new BluetoothDevice{Id = e.Device.Id, Name = e.Device.Name});
         }
     }
 

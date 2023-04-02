@@ -35,7 +35,7 @@ public partial class HomePageViewModel : BaseViewModel
             return;
         }
 
-        BluetoothLEService.NewDeviceCandidateFromHomePage = deviceCandidate;
+        BluetoothLEService.SelectedBluetoothDevice = deviceCandidate;
 
         Title = $"{deviceCandidate.Name}";
 
@@ -44,43 +44,9 @@ public partial class HomePageViewModel : BaseViewModel
 
     async Task ScanDevicesAsync()
     {
-        if (IsScanning)
-        {
-            return;
-        }
-
-        if (!BluetoothLEService.BluetoothLE.IsAvailable)
-        {
-            Debug.WriteLine($"Bluetooth is missing.");
-            await Shell.Current.DisplayAlert($"Bluetooth", $"Bluetooth is missing.", "OK");
-            return;
-        }
-
-#if ANDROID
-        PermissionStatus permissionStatus = await BluetoothLEService.CheckBluetoothPermissions();
-        if (permissionStatus != PermissionStatus.Granted)
-        {
-            permissionStatus = await BluetoothLEService.RequestBluetoothPermissions();
-            if (permissionStatus != PermissionStatus.Granted)
-            {
-                await Shell.Current.DisplayAlert($"Bluetooth LE permissions", $"Bluetooth LE permissions are not granted.", "OK");
-                return;
-            }
-        }
-#elif IOS
-#elif WINDOWS
-#endif
-
         try
         {
-            if (!BluetoothLEService.BluetoothLE.IsOn)
-            {
-                await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
-                return;
-            }
-
             IsScanning = true;
-
             List<BluetoothDevice> deviceCandidates = await BluetoothLEService.ScanForDevicesAsync();
 
             if (deviceCandidates.Count == 0)
@@ -107,7 +73,9 @@ public partial class HomePageViewModel : BaseViewModel
         {
             IsScanning = false;
         }
+
     }
+
 
     async Task CheckBluetoothAvailabilityAsync()
     {
