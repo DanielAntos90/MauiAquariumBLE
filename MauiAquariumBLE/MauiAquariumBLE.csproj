@@ -55,8 +55,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\HomePage.xaml.cs">
-	    <DependentUpon>HomePage.xaml</DependentUpon>
+	  <Compile Update="Views\ScanDevicesView.xaml.cs">
+	    <DependentUpon>ScanDevicesView.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -76,7 +76,7 @@
 	  <MauiXaml Update="Views\PrivacyStatementPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\HomePage.xaml">
+	  <MauiXaml Update="Views\ScanDevicesView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SettingsPage.xaml">

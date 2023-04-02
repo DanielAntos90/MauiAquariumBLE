@@ -1,8 +1,6 @@
-﻿using System.Linq;
+﻿namespace MauiBluetoothBLE.ViewModels;
 
-namespace MauiBluetoothBLE.ViewModels;
-
-public partial class HomePageViewModel : BaseViewModel
+public partial class ScanDevicesViewModel : BaseViewModel
 {
     BluetoothLEService BluetoothLEService;
 
@@ -12,7 +10,7 @@ public partial class HomePageViewModel : BaseViewModel
     public IAsyncRelayCommand ScanNearbyDevicesAsyncCommand { get; }
     public IAsyncRelayCommand CheckBluetoothAvailabilityAsyncCommand { get; }
 
-    public HomePageViewModel(BluetoothLEService bluetoothLEService)
+    public ScanDevicesViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Scan and select device";
 

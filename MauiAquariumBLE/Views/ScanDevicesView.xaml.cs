@@ -1,8 +1,8 @@
 namespace MauiBluetoothBLE.Views;
 
-public partial class HomePage : ContentPage
+public partial class ScanDevicesView : ContentPage
 {
-	public HomePage(HomePageViewModel viewModel)
+	public ScanDevicesView(ScanDevicesViewModel viewModel)
 	{
 		InitializeComponent();
         BindingContext = viewModel;

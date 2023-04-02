@@ -23,19 +23,21 @@
         </ResourceDictionary>
     </Shell.Resources>
 
-    <FlyoutItem Title="Scan and select device" 
-                FlyoutIcon="{StaticResource IconBluetoothLE}">
-        <ShellContent ContentTemplate="{DataTemplate pages:HomePage}"
-                      Route="HomePage" >
-        </ShellContent>
-    </FlyoutItem>
-
     <FlyoutItem Title="Heart rate"
                 FlyoutIcon="{StaticResource IconHeartRate}">
         <ShellContent ContentTemplate="{DataTemplate pages:HeartRatePage}"
                       Route="HeartRatePage">
         </ShellContent>
     </FlyoutItem>
+
+    <FlyoutItem Title="Scan and select device" 
+                FlyoutIcon="{StaticResource IconBluetoothLE}">
+        <ShellContent ContentTemplate="{DataTemplate pages:ScanDevicesView}"
+                      Route="HomePage" >
+        </ShellContent>
+    </FlyoutItem>
+
+
 
     <FlyoutItem Title="Settings"
                 FlyoutIcon="{StaticResource IconGears}">
