@@ -100,11 +100,11 @@ public partial class HeartRatePageViewModel : BaseViewModel
             if (BluetoothLEService.Device.State == DeviceState.Connected)
             {
                 var services = await BluetoothLEService.Device.GetServicesAsync();
-                HeartRateService = await BluetoothLEService.Device.GetServiceAsync(HeartRateUuids.TISensorTagSmartKeys);
+                HeartRateService = await BluetoothLEService.Device.GetServiceAsync(Uuids.TISensorTagSmartKeys);
                 if (HeartRateService != null)
                 {
                     var characteristics = await HeartRateService.GetCharacteristicsAsync();
-                    HeartRateMeasurementCharacteristic = await HeartRateService.GetCharacteristicAsync(HeartRateUuids.TXRX);
+                    HeartRateMeasurementCharacteristic = await HeartRateService.GetCharacteristicAsync(Uuids.TXRX);
                     if (HeartRateMeasurementCharacteristic != null)
                     {
                         if (HeartRateMeasurementCharacteristic.CanUpdate)
@@ -114,7 +114,8 @@ public partial class HeartRatePageViewModel : BaseViewModel
                             #region save device id to storage
                             await SecureStorage.Default.SetAsync("device_name", $"{BluetoothLEService.Device.Name}");
                             await SecureStorage.Default.SetAsync("device_id", $"{BluetoothLEService.Device.Id}");
-                            #endregion save device id to storage
+                            #endregion save device id to storage 
+
                             await send();
 
                             HeartRateMeasurementCharacteristic.ValueUpdated += HeartRateMeasurementCharacteristic_ValueUpdated;

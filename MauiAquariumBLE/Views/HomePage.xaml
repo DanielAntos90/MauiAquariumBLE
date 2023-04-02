@@ -45,7 +45,7 @@
                     <GridItemsLayout  Orientation="Vertical"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="model:DeviceCandidate">
+                    <DataTemplate x:DataType="model:BluetoothDevice"> 
                         <Grid Padding="10">
                             <Frame Style="{StaticResource CardView}">
                                 <Frame.GestureRecognizers>

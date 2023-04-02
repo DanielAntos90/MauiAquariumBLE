@@ -1,8 +1,9 @@
 ﻿namespace MauiBluetoothBLE.Models;
 
-public class DeviceCandidate
+public class BluetoothDevice
 {
     public Guid Id { get; internal set; }
     public string Name { get; internal set; }
 }
+
 

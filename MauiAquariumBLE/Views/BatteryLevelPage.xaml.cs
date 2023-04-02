@@ -54,10 +54,10 @@ public partial class BatteryLevelPage : ContentPage
     {
         try
         {
-            BatteryLevelService = await BluetoothLEService.Device.GetServiceAsync(HeartRateUuids.BatteryLevelServiceUuid);
+            BatteryLevelService = await BluetoothLEService.Device.GetServiceAsync(Uuids.BatteryLevelServiceUuid);
             if (BatteryLevelService != null)
             {
-                BatteryLevelCharacteristic = await BatteryLevelService.GetCharacteristicAsync(HeartRateUuids.BatteryLevelCharacteristicUuid);
+                BatteryLevelCharacteristic = await BatteryLevelService.GetCharacteristicAsync(Uuids.BatteryLevelCharacteristicUuid);
                 if (BatteryLevelCharacteristic != null)
                 {
                     if (BatteryLevelCharacteristic.CanRead)

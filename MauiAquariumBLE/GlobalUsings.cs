@@ -7,7 +7,6 @@ global using MauiBluetoothBLE.Models;
 global using MauiBluetoothBLE.Views;
 global using MauiBluetoothBLE.ViewModels;
 global using MauiBluetoothBLE.Services;
-global using MauiBluetoothBLE.Uuids;
 global using Microsoft.Maui.ApplicationModel;
 global using Plugin.BLE;
 global using Plugin.BLE.Abstractions;

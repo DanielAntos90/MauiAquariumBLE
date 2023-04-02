@@ -1,6 +1,6 @@
-﻿namespace MauiBluetoothBLE.Uuids;
+﻿namespace MauiBluetoothBLE.Models;
 
-public class HeartRateUuids
+public class Uuids
 {
     public static Guid[] HeartRateServiceUuids { get; private set; } = new Guid[] { new Guid("0000180d-0000-1000-8000-00805f9b34fb") }; //"Heart Rate Service"
     public static Guid HeartRateServiceUuid { get; private set; } = new Guid("0000180d-0000-1000-8000-00805f9b34fb"); //"Heart Rate Service"
@@ -11,3 +11,4 @@ public class HeartRateUuids
     public static Guid TXRX { get; private set; } = new Guid("0000ffe1-0000-1000-8000-00805f9b34fb");
     
 }
+

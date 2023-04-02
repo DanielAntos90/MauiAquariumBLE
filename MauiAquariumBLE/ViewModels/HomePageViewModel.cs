@@ -4,7 +4,7 @@ public partial class HomePageViewModel : BaseViewModel
 {
     BluetoothLEService BluetoothLEService;
 
-    public ObservableCollection<DeviceCandidate> DeviceCandidates { get; } = new();
+    public ObservableCollection<BluetoothDevice> DeviceCandidates { get; } = new();
 
     public IAsyncRelayCommand GoToHeartRatePageAsyncCommand { get; }
     public IAsyncRelayCommand ScanNearbyDevicesAsyncCommand { get; }
@@ -16,13 +16,13 @@ public partial class HomePageViewModel : BaseViewModel
 
         BluetoothLEService = bluetoothLEService;
 
-        GoToHeartRatePageAsyncCommand = new AsyncRelayCommand<DeviceCandidate>(async (devicecandidate) => await GoToHeartRatePageAsync(devicecandidate));
+        GoToHeartRatePageAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHeartRatePageAsync(devicecandidate));
 
         ScanNearbyDevicesAsyncCommand = new AsyncRelayCommand(ScanDevicesAsync);
         CheckBluetoothAvailabilityAsyncCommand = new AsyncRelayCommand(CheckBluetoothAvailabilityAsync);
     }
 
-    async Task GoToHeartRatePageAsync(DeviceCandidate deviceCandidate)
+    async Task GoToHeartRatePageAsync(BluetoothDevice deviceCandidate)
     {
         if (IsScanning)
         {
@@ -81,7 +81,7 @@ public partial class HomePageViewModel : BaseViewModel
 
             IsScanning = true;
 
-            List<DeviceCandidate> deviceCandidates = await BluetoothLEService.ScanForDevicesAsync();
+            List<BluetoothDevice> deviceCandidates = await BluetoothLEService.ScanForDevicesAsync();
 
             if (deviceCandidates.Count == 0)
             {

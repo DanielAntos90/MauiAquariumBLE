@@ -2,8 +2,8 @@
 
 public class BluetoothLEService
 {
-    public DeviceCandidate NewDeviceCandidateFromHomePage { get; set; } = new();
-    public List<DeviceCandidate> DeviceCandidateList { get; private set; }
+    public BluetoothDevice NewDeviceCandidateFromHomePage { get; set; } = new();
+    public List<BluetoothDevice> DeviceCandidateList { get; private set; }
     public IBluetoothLE BluetoothLE { get; private set; }
     public IAdapter Adapter { get; private set; }
     public IDevice Device { get; set; }
@@ -22,19 +22,19 @@ public class BluetoothLEService
         BluetoothLE.StateChanged += BluetoothLE_StateChanged;
     }
 
-    public async Task<List<DeviceCandidate>> ScanForDevicesAsync()
+    public async Task<List<BluetoothDevice>> ScanForDevicesAsync()
     {
-        DeviceCandidateList = new List<DeviceCandidate>();
+        DeviceCandidateList = new List<BluetoothDevice>();
 
         try
         {
-            IReadOnlyList<IDevice> systemDevices = Adapter.GetSystemConnectedOrPairedDevices(HeartRateUuids.HeartRateServiceUuids);
+            IReadOnlyList<IDevice> systemDevices = Adapter.GetSystemConnectedOrPairedDevices(Uuids.HeartRateServiceUuids);
             foreach (var systemDevice in systemDevices)
             {
-                DeviceCandidate deviceCandidate = DeviceCandidateList.FirstOrDefault(d => d.Id == systemDevice.Id);
+                BluetoothDevice deviceCandidate = DeviceCandidateList.FirstOrDefault(d => d.Id == systemDevice.Id);
                 if (deviceCandidate == null)
                 {
-                    DeviceCandidateList.Add(new DeviceCandidate
+                    DeviceCandidateList.Add(new BluetoothDevice
                     {
                         Id = systemDevice.Id,
                         Name = systemDevice.Name,
@@ -56,10 +56,10 @@ public class BluetoothLEService
     #region DeviceEventArgs
     private async void Adapter_DeviceDiscovered(object sender, DeviceEventArgs e)
     {
-        DeviceCandidate deviceCandidate = DeviceCandidateList.FirstOrDefault(d => d.Id == e.Device.Id);
+        BluetoothDevice deviceCandidate = DeviceCandidateList.FirstOrDefault(d => d.Id == e.Device.Id);
         if (deviceCandidate == null)
         {
-            DeviceCandidateList.Add(new DeviceCandidate
+            DeviceCandidateList.Add(new BluetoothDevice
             {
                 Id = e.Device.Id,
                 Name = e.Device.Name,
