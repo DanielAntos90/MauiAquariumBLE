@@ -35,14 +35,14 @@
 
                 <TimePicker Style="{StaticResource LargeLabel}" Time="{Binding CurrentTime}" Grid.Row="0" Grid.Column="1" Format="H:mm" />
 
-                <ImageButton Source="led_q.png"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Clicked="OnImageButtonClicked"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center" 
-                    WidthRequest="120" 
-                    HeightRequest="120"/>
+                <ImageButton Source="{Binding LedStatusButtonSource}"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Clicked="OnImageButtonClicked"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" 
+                            WidthRequest="120" 
+                            HeightRequest="120"/>
 
 
             </Grid>

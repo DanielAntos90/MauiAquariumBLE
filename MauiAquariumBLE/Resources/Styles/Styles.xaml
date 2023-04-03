@@ -11,11 +11,11 @@
                Color="{StaticResource Primary}"
                Glyph="{x:Static local:IconFont.Bluetooth_b}"/>
 
-    <FontImage x:Key="IconHeartRate"
+    <FontImage x:Key="IconHome"
                FontFamily="FontAwesome"
                Size="22"
                Color="{StaticResource Primary}"
-               Glyph="{x:Static local:IconFont.Heartbeat}"/>
+               Glyph="{x:Static local:IconFont.Home}"/>
 
     <FontImage x:Key="IconGears"
                FontFamily="FontAwesome"

@@ -5,7 +5,7 @@ public partial class AboutPageViewModel : BaseViewModel
     public BluetoothLEService BluetoothLEService { get; private set; }
     public AboutPageViewModel(BluetoothLEService bluetoothLEService)
     {
-        Title = $"About MauiXAMLBluetoothLE";
+        Title = $"About MauiAquariumBLE";
 
         BluetoothLEService = bluetoothLEService;
 

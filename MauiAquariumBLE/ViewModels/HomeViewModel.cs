@@ -11,16 +11,19 @@ public partial class HomeViewModel : BaseViewModel
     BluetoothLEService BluetoothLEService;
 
     [ObservableProperty]
-    string bluetoothStatus;
+    string bluetoothStatus = "Unknown";
 
     [ObservableProperty]
-    TimeSpan currentTime;
+    TimeSpan currentTime = TimeSpan.Parse("00:00");
+
+    [ObservableProperty]
+    string ledStatusButtonSource = "led_q.png";
 
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Home";
-        BluetoothStatus = "Unknown";
-        CurrentTime = TimeSpan.Parse("00:00");
+       // BluetoothStatus = "Unknown";
+       // CurrentTime = TimeSpan.Parse("00:00");
 
         BluetoothLEService = bluetoothLEService;
         BluetoothLEService.PropertyChanged += ViewModel_PropertyChanged;
@@ -39,8 +42,8 @@ public partial class HomeViewModel : BaseViewModel
             //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
             string[] message = BluetoothLEService.Message.Split(";");
             CurrentTime = TimeSpan.Parse(message[1]);
-      
-           
+            LedStatusButtonSource = message[1].Contains("led on") ? "led_on.png" : "led_off.png";
+
         }
     }
 

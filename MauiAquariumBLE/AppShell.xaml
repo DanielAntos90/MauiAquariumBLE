@@ -24,7 +24,7 @@
     </Shell.Resources>
 
     <FlyoutItem Title="Home"
-                FlyoutIcon="{StaticResource IconHeartRate}">
+                FlyoutIcon="{StaticResource IconHome}">
         <ShellContent ContentTemplate="{DataTemplate pages:HomeView}"
                       Route="HomeView">
         </ShellContent>
@@ -46,7 +46,7 @@
         </ShellContent>
     </FlyoutItem>
 
-    <FlyoutItem Title="About MauiXAMLBluetoothLE"
+    <FlyoutItem Title="About MauiAquariumBLE"
                 FlyoutIcon="{StaticResource IconInfo}">
         <ShellContent ContentTemplate="{DataTemplate pages:AboutPage}"
                       Route="AboutPage">
