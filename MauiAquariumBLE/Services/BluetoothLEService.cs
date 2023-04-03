@@ -209,7 +209,6 @@ public class BluetoothLEService : INotifyPropertyChanged
                 BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
                 await BluetoothConnectionCharacteristic.StartUpdatesAsync();
 
-                await Send("inputs");
                 Status = "Done";
 
             }
@@ -220,7 +219,8 @@ public class BluetoothLEService : INotifyPropertyChanged
             Status = $"Unable to connect to  device {Device?.Name}";
             await ShowToastAsync($"Unable to connect to  device {Device?.Name}");
         }
-        
+
+        await Send("inputs");
     }
 
     private void ReceivedData(object sender, CharacteristicUpdatedEventArgs e)
