@@ -1,8 +1,12 @@
-﻿using System.Text;
+﻿using Microsoft.Maui.Controls;
+using System.ComponentModel;
+using System.Text;
+using System.Threading.Channels;
+using System.Xml.Linq;
 
 namespace MauiBluetoothBLE.Services;
 
-public class BluetoothLEService
+public class BluetoothLEService : INotifyPropertyChanged
 {
     public BluetoothDevice SelectedBluetoothDevice { get; private set; } = new();
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
@@ -14,19 +18,38 @@ public class BluetoothLEService
 
     private string _fullValue;
 
-    public BluetoothLEService()
+    private string _myProperty;
+    public string MyProperty
     {
-        BluetoothLE = CrossBluetoothLE.Current;
-        Adapter = CrossBluetoothLE.Current.Adapter;
-        Adapter.ScanTimeout = 4000;
-
-        Adapter.DeviceDiscovered += DeviceDiscovered;
-        Adapter.DeviceConnected += Adapter_DeviceConnected;
-        Adapter.DeviceDisconnected += Adapter_DeviceDisconnected;
-        Adapter.DeviceConnectionLost += Adapter_DeviceConnectionLost;
-
-        BluetoothLE.StateChanged += BluetoothLE_StateChanged;
+        get => _myProperty;
+        set
+        {
+            _myProperty = value;
+            OnPropertyChanged(nameof(MyProperty));
+        }
     }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+
+
+
+    public BluetoothLEService()
+{
+    BluetoothLE = CrossBluetoothLE.Current;
+    Adapter = CrossBluetoothLE.Current.Adapter;
+    Adapter.ScanTimeout = 4000;
+    Adapter.DeviceDiscovered += DeviceDiscovered;
+    Adapter.DeviceConnected += Adapter_DeviceConnected;
+    Adapter.DeviceDisconnected += Adapter_DeviceDisconnected;
+    Adapter.DeviceConnectionLost += Adapter_DeviceConnectionLost;
+    BluetoothLE.StateChanged += BluetoothLE_StateChanged;
+}
 
     private async Task<bool> IsBluetoothAvailable()
     {
@@ -131,6 +154,7 @@ public class BluetoothLEService
 
     public async Task ConnectToDeviceAsync()
     {
+        MyProperty = "Connecting";
         try
         {
             if (Device != null && Device.State == DeviceState.Connected && Device.Id.Equals(SelectedBluetoothDevice.Id))
@@ -180,6 +204,7 @@ public class BluetoothLEService
             Debug.WriteLine($"Unable to connect to  Bluetooth: {ex.Message}");
             await ShowToastAsync($"{Device.Name} connection failed.");
         }
+        MyProperty = "Done";
     }
 
     private void ReceivedData(object sender, CharacteristicUpdatedEventArgs e)

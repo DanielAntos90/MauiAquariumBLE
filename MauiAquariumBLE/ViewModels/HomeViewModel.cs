@@ -1,6 +1,5 @@
 ﻿
-using MauiBluetoothBLE.Services;
-using System.Text;
+using System.ComponentModel;
 
 namespace MauiBluetoothBLE.ViewModels;
 
@@ -11,22 +10,33 @@ public partial class HomeViewModel : BaseViewModel
 
     BluetoothLEService BluetoothLEService;
 
+    [ObservableProperty]
+    string status;
+
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Home";
 
         BluetoothLEService = bluetoothLEService;
+        BluetoothLEService.PropertyChanged += ViewModel_PropertyChanged;
 
         ConnectToDeviceCandidateAsyncCommand = new AsyncRelayCommand(ConnectToDeviceCandidateAsync );
 
         DisconnectFromDeviceAsyncCommand = new AsyncRelayCommand(DisconnectFromDeviceAsync);
+
+    }
+
+    private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(BluetoothLEService.MyProperty))
+        {
+            Status = BluetoothLEService.MyProperty;
+            // update the property in this class
+        }
     }
 
     [ObservableProperty]
     ushort heartRateValue;
-
-    [ObservableProperty]
-    DateTimeOffset timestamp;
 
     private async Task ConnectToDeviceCandidateAsync()
     {
@@ -83,7 +93,6 @@ public partial class HomeViewModel : BaseViewModel
         {
             Title = "Heart rate";
             HeartRateValue = 0;
-            Timestamp = DateTimeOffset.MinValue;
             IsBusy = false;
             BluetoothLEService.Device?.Dispose();
             await Shell.Current.GoToAsync("//HomePage", true);

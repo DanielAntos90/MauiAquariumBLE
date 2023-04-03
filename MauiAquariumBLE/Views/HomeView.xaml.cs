@@ -27,4 +27,9 @@ public partial class HomeView : ContentPage
     {
         base.OnDisappearing();
     }
+
+    void OnImageButtonClicked(object sender, EventArgs e)
+    {
+        
+    }
 }
