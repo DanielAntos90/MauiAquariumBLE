@@ -33,7 +33,7 @@
                        Style="{StaticResource LargeLabel}"
                        HorizontalOptions="FillAndExpand"/>
 
-                <TimePicker Style="{StaticResource LargeLabel}" Time="14:15:26" Grid.Row="0" Grid.Column="1" Format="H:mm" />
+                <TimePicker Style="{StaticResource LargeLabel}" Time="{Binding CurrentTime}" Grid.Row="0" Grid.Column="1" Format="H:mm" />
 
                 <ImageButton Source="led_q.png"
                     Grid.Row="1"

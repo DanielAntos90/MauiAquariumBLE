@@ -16,15 +16,24 @@ public class BluetoothLEService : INotifyPropertyChanged
     public IService BluetoothConnectionService { get; private set; }
     public ICharacteristic BluetoothConnectionCharacteristic { get; private set; }
 
-    private string _fullValue;
+    private string _message;
 
-    private string _myProperty;
-    public string Status
+    public string Message
     {
-        get => _myProperty;
+        get => _message;
         set
         {
-            _myProperty = value;
+            _message = value;
+        }
+    }
+
+    private string _status;
+    public string Status
+    {
+        get => _status;
+        set
+        {
+            _status = value;
             OnPropertyChanged(nameof(Status));
         }
     }
@@ -216,14 +225,15 @@ public class BluetoothLEService : INotifyPropertyChanged
     private void ReceivedData(object sender, CharacteristicUpdatedEventArgs e)
     {
         string message = Encoding.UTF8.GetString(e.Characteristic.Value);
-        _fullValue += message;
+        Message += message;
 
         if (message.Contains('\n'))
         {
             // Full value received, process it
             Status = $"Received data";
-            var a = _fullValue; //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
-            _fullValue = null;
+            OnPropertyChanged(nameof(Message));
+            //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
+            Message = null;
         }
     }
 
