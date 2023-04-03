@@ -48,7 +48,7 @@
             </Grid>
         </StackLayout>
 
-        <Image x:Name="MyImage" Source="bluetooth.png" WidthRequest="50" 
+        <Image x:Name="MyImage" Source="{Binding BluetoothStatusImage}" WidthRequest="50" 
                     HeightRequest="50" Grid.Row="1"
                Grid.Column="0" HorizontalOptions="Start"/>
         

@@ -19,6 +19,9 @@ public partial class HomeViewModel : BaseViewModel
     [ObservableProperty]
     string ledStatusButtonSource = "led_q.png";
 
+    [ObservableProperty]
+    string bluetoothStatusImage = "bluetooth_disconected.png";
+
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Home";
@@ -37,6 +40,8 @@ public partial class HomeViewModel : BaseViewModel
         if (e.PropertyName == nameof(BluetoothLEService.Status))
         {
             BluetoothStatus = BluetoothLEService.Status;
+            BluetoothStatusImage = BluetoothLEService.Device?.State == DeviceState.Connected ? "bluetooth.png" : "bluetooth_disconected.png";
+
         } else if (e.PropertyName == nameof(BluetoothLEService.Message))
         {
             //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n

@@ -216,8 +216,8 @@ public class BluetoothLEService : INotifyPropertyChanged
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to connect to  Bluetooth: {ex.Message}");
-            Status = $"Unable to connect to  device: {Device.Name}";
-            await ShowToastAsync($"{Device.Name} connection failed.");
+            Status = $"Unable to connect to  device {Device?.Name}";
+            await ShowToastAsync($"Unable to connect to  device {Device?.Name}");
         }
         
     }
