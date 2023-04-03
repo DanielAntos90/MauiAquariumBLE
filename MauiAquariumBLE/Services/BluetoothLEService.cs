@@ -171,6 +171,7 @@ public class BluetoothLEService : INotifyPropertyChanged
             if (Device != null && Device.State == DeviceState.Connected && Device.Id.Equals(SelectedBluetoothDevice.Id))
             {
                 await ShowToastAsync($"{Device.Name} is already connected.");
+                return;
             } else
             {
                 await ScanAndConnectToKnownDeviceAsync();
