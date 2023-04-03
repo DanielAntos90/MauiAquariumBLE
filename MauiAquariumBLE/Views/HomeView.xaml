@@ -9,40 +9,56 @@
              Title="{Binding Title}">
 
     <Grid x:Name="HeartRatePageGrid"
-          ColumnDefinitions="*,*"
+     
           ColumnSpacing="6"
           RowDefinitions="*,Auto"
           RowSpacing="0"
           BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
 
+        <StackLayout 
+                     Grid.RowSpan="2"
+                     Grid.ColumnSpan="2"
+                     BackgroundColor="Transparent">
+
+            <Grid RowDefinitions="*,*,*,*,*,*"
+                  ColumnDefinitions="*,*"
+                  RowSpacing="8"
+                  ColumnSpacing="8"
+                  HorizontalOptions="CenterAndExpand"
+                  VerticalOptions="CenterAndExpand">
+
+                <Label Grid.Row="0"
+                       Grid.Column="0"
+                       Text="Time"
+                       Style="{StaticResource LargeLabel}"
+                       HorizontalOptions="FillAndExpand"/>
+
+                <TimePicker Style="{StaticResource LargeLabel}" Time="14:15:26" Grid.Row="0" Grid.Column="1" Format="H:mm" />
+
+                <ImageButton Source="led_q.png"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Clicked="OnImageButtonClicked"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" 
+                    WidthRequest="120" 
+                    HeightRequest="120"/>
+
+
+            </Grid>
+        </StackLayout>
+
+        <Image x:Name="MyImage" Source="bluetooth.png" WidthRequest="50" 
+                    HeightRequest="50" Grid.Row="1"
+               Grid.Column="0" HorizontalOptions="Start"/>
+        
         <Label Grid.Row="1"
                Grid.Column="0"
-                Text="{Binding Status}"
+                Text="{Binding BluetoothStatus}"
                 Style="{StaticResource MediumLabel}"
                 HorizontalOptions="CenterAndExpand"/>
 
-        <ImageButton Source="led_q.png"
-                    Clicked="OnImageButtonClicked"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center" />
+    
 
-        <Button x:Name="ConnectToButton"
-                Grid.Row="1"
-                Grid.Column="1"
-                Margin="8"
-                Command="{Binding ConnectToDeviceCandidateAsyncCommand}"
-                IsEnabled="{Binding IsNotBusy}"
-                IsVisible="{Binding IsNotBusy}"
-                Style="{StaticResource ButtonOutline}"
-                Text="Connect" />
-
-        <TimePicker Time="4:15:26" />
-
-        <ActivityIndicator x:Name="HeartRatePageActivityIndicator"
-                           Grid.ColumnSpan="2"
-                           IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           HorizontalOptions="CenterAndExpand"
-                           VerticalOptions="StartAndExpand" />
     </Grid>
 </ContentPage>

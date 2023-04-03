@@ -19,13 +19,13 @@ public class BluetoothLEService : INotifyPropertyChanged
     private string _fullValue;
 
     private string _myProperty;
-    public string MyProperty
+    public string Status
     {
         get => _myProperty;
         set
         {
             _myProperty = value;
-            OnPropertyChanged(nameof(MyProperty));
+            OnPropertyChanged(nameof(Status));
         }
     }
 
@@ -40,16 +40,16 @@ public class BluetoothLEService : INotifyPropertyChanged
 
 
     public BluetoothLEService()
-{
-    BluetoothLE = CrossBluetoothLE.Current;
-    Adapter = CrossBluetoothLE.Current.Adapter;
-    Adapter.ScanTimeout = 4000;
-    Adapter.DeviceDiscovered += DeviceDiscovered;
-    Adapter.DeviceConnected += Adapter_DeviceConnected;
-    Adapter.DeviceDisconnected += Adapter_DeviceDisconnected;
-    Adapter.DeviceConnectionLost += Adapter_DeviceConnectionLost;
-    BluetoothLE.StateChanged += BluetoothLE_StateChanged;
-}
+    {
+        BluetoothLE = CrossBluetoothLE.Current;
+        Adapter = CrossBluetoothLE.Current.Adapter;
+        Adapter.ScanTimeout = 4000;
+        Adapter.DeviceDiscovered += DeviceDiscovered;
+        //Adapter.DeviceConnected += Adapter_DeviceConnected;
+        Adapter.DeviceDisconnected += DeviceDisconnected;
+        Adapter.DeviceConnectionLost += Adapter_DeviceConnectionLost;
+        BluetoothLE.StateChanged += BluetoothLE_StateChanged;
+    }
 
     private async Task<bool> IsBluetoothAvailable()
     {
@@ -83,6 +83,7 @@ public class BluetoothLEService : INotifyPropertyChanged
     {
         if (!BluetoothLE.IsOn)
         {
+            Status = "Bluetooth is off.";
             await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
             return false;
         }
@@ -93,6 +94,7 @@ public class BluetoothLEService : INotifyPropertyChanged
     {
         if (Adapter.IsScanning)
         {
+            Status = "Bluetooth adapter is scanning";
             await ShowToastAsync($"Bluetooth adapter is scanning. Try again.");
             return true;
         }
@@ -105,8 +107,9 @@ public class BluetoothLEService : INotifyPropertyChanged
             if(!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
 
             await SetStoredDevice();
-
+            Status = "Connecting to bluetooth device";
             Device = await Adapter.ConnectToKnownDeviceAsync(SelectedBluetoothDevice.Id);
+            Status = "Connection to device done";
         }
         catch (Exception ex)
         {
@@ -154,25 +157,25 @@ public class BluetoothLEService : INotifyPropertyChanged
 
     public async Task ConnectToDeviceAsync()
     {
-        MyProperty = "Connecting";
         try
         {
             if (Device != null && Device.State == DeviceState.Connected && Device.Id.Equals(SelectedBluetoothDevice.Id))
             {
                 await ShowToastAsync($"{Device.Name} is already connected.");
-                return;
+            } else
+            {
+                await ScanAndConnectToKnownDeviceAsync();
             }
-
-            await ScanAndConnectToKnownDeviceAsync();
 
             if (Device.State == DeviceState.Connected)
             {
                 BluetoothConnectionService = await Device.GetServiceAsync(Uuids.TISensorTagSmartKeys);
-
+                Status = "Bluetooth device connected";
             }
             else
             {
-                await ShowToastAsync($"{Device.Name} connection failed.");
+                Status = $"{Device.Name} service connection failed";
+                await ShowToastAsync($"{Device.Name} service connection failed.");
                 return;
             }
 
@@ -182,7 +185,8 @@ public class BluetoothLEService : INotifyPropertyChanged
             }
             else
             {
-                await ShowToastAsync($"{Device.Name} connection failed.");
+                Status = $"{Device.Name} characteristics connection failed";
+                await ShowToastAsync($"{Device.Name} characteristics connection failed.");
                 return;
             }
 
@@ -190,21 +194,23 @@ public class BluetoothLEService : INotifyPropertyChanged
             {
                 await SecureStorage.Default.SetAsync("device_name", $"{Device.Name}");
                 await SecureStorage.Default.SetAsync("device_id", $"{Device.Id}");
+              
 
                 BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
                 await BluetoothConnectionCharacteristic.StartUpdatesAsync();
 
                 await Send("inputs");
+                Status = "Done";
 
-                return;
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable to connect to  Bluetooth: {ex.Message}");
+            Status = $"Unable to connect to  device: {Device.Name}";
             await ShowToastAsync($"{Device.Name} connection failed.");
         }
-        MyProperty = "Done";
+        
     }
 
     private void ReceivedData(object sender, CharacteristicUpdatedEventArgs e)
@@ -215,7 +221,7 @@ public class BluetoothLEService : INotifyPropertyChanged
         if (message.Contains('\n'))
         {
             // Full value received, process it
-
+            Status = $"Received data";
             var a = _fullValue; //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
             _fullValue = null;
         }
@@ -224,6 +230,7 @@ public class BluetoothLEService : INotifyPropertyChanged
     private async Task Send(string message)
     {
         byte[] data = Encoding.UTF8.GetBytes(message);
+        Status = $"Requesting data.";
         await BluetoothConnectionCharacteristic.WriteAsync(data);
     }
 
@@ -240,43 +247,20 @@ public class BluetoothLEService : INotifyPropertyChanged
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            try
+            if (!Adapter.IsScanning && e.Device.Name != null)
             {
-                //await ShowToastAsync($"{e.Device.Name} connection is lost.");
-            }
-            catch
-            {
-                //await ShowToastAsync($"Device connection is lost.");
+               // await ShowToastAsync($"{e.Device.Name} connection is lost.");
             }
         });
     }
 
-    private void Adapter_DeviceConnected(object sender, DeviceEventArgs e)
+    private void DeviceDisconnected(object sender, DeviceEventArgs e)
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            try
+            if (!Adapter.IsScanning && e.Device.Name != null)
             {
-                //await ShowToastAsync($"{e.Device.Name} is connected.");
-            }
-            catch
-            {
-                //await ShowToastAsync($"Device is connected.");
-            }
-        });
-    }
-
-    private void Adapter_DeviceDisconnected(object sender, DeviceEventArgs e)
-    {
-        MainThread.BeginInvokeOnMainThread(async () =>
-        {
-            try
-            {
-                //await ShowToastAsync($"{e.Device.Name} is disconnected.");
-            }
-            catch
-            {
-                //await ShowToastAsync($"Device is disconnected.");
+               // await ShowToastAsync($"{e.Device.Name} is disconnected.");
             }
         });
     }
@@ -287,13 +271,9 @@ public class BluetoothLEService : INotifyPropertyChanged
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            try
+            if (!Adapter.IsScanning)
             {
-                await ShowToastAsync($"Bluetooth state is {e.NewState}.");
-            }
-            catch
-            {
-                await ShowToastAsync($"Bluetooth state has changed.");
+                //await ShowToastAsync($"Bluetooth state changed to {e.NewState}.");
             }
         });
     }

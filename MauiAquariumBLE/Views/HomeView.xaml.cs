@@ -2,10 +2,13 @@ namespace MauiBluetoothBLE.Views;
 
 public partial class HomeView : ContentPage
 {
-	public HomeView(HomeViewModel viewModel)
+    private readonly HomeViewModel _viewModel;
+
+    public HomeView(HomeViewModel viewModel)
 	{
 		InitializeComponent();
         BindingContext = viewModel;
+        _viewModel = viewModel;
     }
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
@@ -17,15 +20,17 @@ public partial class HomeView : ContentPage
         base.OnNavigatedFrom(args);
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
+        await _viewModel.ConnectToDeviceAsync();
     }
 
 
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+       
     }
 
     void OnImageButtonClicked(object sender, EventArgs e)
