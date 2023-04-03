@@ -237,11 +237,19 @@ public class BluetoothLEService : INotifyPropertyChanged
         }
     }
 
-    private async Task Send(string message)
+    public async Task Send(string message)
     {
         byte[] data = Encoding.UTF8.GetBytes(message);
         Status = $"Requesting data.";
-        await BluetoothConnectionCharacteristic.WriteAsync(data);
+        try
+        {
+            await BluetoothConnectionCharacteristic.WriteAsync(data);
+        }
+        catch (Exception)
+        {
+
+            Status = $"Unable to request data.";
+        }
     }
 
     #region DeviceEventArgs

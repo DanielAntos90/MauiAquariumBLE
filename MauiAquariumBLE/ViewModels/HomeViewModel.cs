@@ -1,11 +1,13 @@
 ﻿
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HomeViewModel : BaseViewModel
 {
-   // public IAsyncRelayCommand ConnectToDeviceCandidateAsyncCommand { get; }
+
+    public ICommand OnLedStatusButtonClicked { get; private set; }
    // public IAsyncRelayCommand DisconnectFromDeviceAsyncCommand { get; }
 
     BluetoothLEService BluetoothLEService;
@@ -31,7 +33,7 @@ public partial class HomeViewModel : BaseViewModel
         BluetoothLEService = bluetoothLEService;
         BluetoothLEService.PropertyChanged += ViewModel_PropertyChanged;
 
-        //ConnectToDeviceCandidateAsyncCommand = new AsyncRelayCommand(ConnectToDeviceCandidateAsync );
+        OnLedStatusButtonClicked = new Command(ChangeLed);
         //DisconnectFromDeviceAsyncCommand = new AsyncRelayCommand(DisconnectFromDeviceAsync);
     }
 
@@ -45,9 +47,24 @@ public partial class HomeViewModel : BaseViewModel
         } else if (e.PropertyName == nameof(BluetoothLEService.Message))
         {
             //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
-            string[] message = BluetoothLEService.Message.Split(";");
-            CurrentTime = TimeSpan.Parse(message[1]);
-            LedStatusButtonSource = message[1].Contains("led on") ? "led_on.png" : "led_off.png";
+      
+            if (BluetoothLEService.Message.StartsWith("ArduinoOutputs")) {
+                string[] message = BluetoothLEService.Message.Split(";");
+                CurrentTime = TimeSpan.Parse(message[1]);
+                LedStatusButtonSource = message[1].Contains("led on") ? "led_on.png" : "led_off.png";
+            } else if (BluetoothLEService.Message.StartsWith("led on"))
+            {
+                LedStatusButtonSource = "led_on.png";
+                BluetoothStatus = "Light changed succesfully";
+            }
+            else if (BluetoothLEService.Message.StartsWith("led off"))
+            {
+                LedStatusButtonSource =  "led_off.png";
+                BluetoothStatus = "Light changed succesfully";
+            }
+           // "Time changed"
+           // "Light changed"
+
 
         }
     }
@@ -59,6 +76,14 @@ public partial class HomeViewModel : BaseViewModel
     {
         await BluetoothLEService.ConnectToDeviceAsync();
     
+    }
+
+    private async void ChangeLed()
+    {
+        //TODO enable button only when receive data
+        var command = LedStatusButtonSource.Contains("led_on") ? "led off" : "led on";
+        LedStatusButtonSource = "led_q.png";
+        await BluetoothLEService.Send($"turn {command}");
     }
 
                             

@@ -38,7 +38,7 @@
                 <ImageButton Source="{Binding LedStatusButtonSource}"
                             Grid.Row="1"
                             Grid.Column="1"
-                            Clicked="OnImageButtonClicked"
+                            Command="{Binding OnLedStatusButtonClicked}"
                             HorizontalOptions="Center"
                             VerticalOptions="Center" 
                             WidthRequest="120" 
