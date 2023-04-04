@@ -1,12 +1,8 @@
-﻿using Microsoft.Maui.Controls;
-using System.ComponentModel;
-using System.Text;
-using System.Threading.Channels;
-using System.Xml.Linq;
+﻿using System.Text;
 
 namespace MauiBluetoothBLE.Services;
 
-public class BluetoothLEService : INotifyPropertyChanged
+public class BluetoothLEService
 {
     public BluetoothDevice SelectedBluetoothDevice { get; private set; } = new();
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
@@ -15,6 +11,10 @@ public class BluetoothLEService : INotifyPropertyChanged
     public IDevice Device { get; private set; }
     public IService BluetoothConnectionService { get; private set; }
     public ICharacteristic BluetoothConnectionCharacteristic { get; private set; }
+
+    // custom events
+    public event Action StatusChanged;
+    public event Action MessageReceived;
 
     private string _message;
 
@@ -34,19 +34,9 @@ public class BluetoothLEService : INotifyPropertyChanged
         set
         {
             _status = value;
-            OnPropertyChanged(nameof(Status));
+            StatusChanged?.Invoke();
         }
     }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-
-
 
     public BluetoothLEService()
     {
@@ -230,25 +220,21 @@ public class BluetoothLEService : INotifyPropertyChanged
 
         if (message.Contains('\n'))
         {
-            // Full value received, process it
-            Status = $"Received data";
-            OnPropertyChanged(nameof(Message));
-            //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
+            Status = $"Data received";
+            MessageReceived?.Invoke();
             Message = null;
         }
     }
 
     public async Task Send(string message)
     {
-        byte[] data = Encoding.UTF8.GetBytes(message);
-        Status = $"Requesting data.";
         try
         {
-            await BluetoothConnectionCharacteristic.WriteAsync(data);
+            Status = $"Requesting data.";
+            await BluetoothConnectionCharacteristic.WriteAsync(Encoding.UTF8.GetBytes(message));
         }
         catch (Exception)
         {
-
             Status = $"Unable to request data.";
         }
     }

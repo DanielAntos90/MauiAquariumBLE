@@ -6,9 +6,7 @@ namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HomeViewModel : BaseViewModel
 {
-
-    public ICommand OnLedStatusButtonClicked { get; private set; }
-   // public IAsyncRelayCommand DisconnectFromDeviceAsyncCommand { get; }
+    public IAsyncRelayCommand OnLedStatusButtonClicked { get; private set; }
 
     BluetoothLEService BluetoothLEService;
 
@@ -27,50 +25,40 @@ public partial class HomeViewModel : BaseViewModel
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Home";
-       // BluetoothStatus = "Unknown";
-       // CurrentTime = TimeSpan.Parse("00:00");
 
         BluetoothLEService = bluetoothLEService;
-        BluetoothLEService.PropertyChanged += ViewModel_PropertyChanged;
+        BluetoothLEService.StatusChanged += ReadBluetoothStatus;
+        BluetoothLEService.MessageReceived += ReadBluetoothMessage;
 
-        OnLedStatusButtonClicked = new Command(ChangeLed);
-        //DisconnectFromDeviceAsyncCommand = new AsyncRelayCommand(DisconnectFromDeviceAsync);
+        OnLedStatusButtonClicked = new AsyncRelayCommand(ChangeLed);
     }
 
-    private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void ReadBluetoothStatus()
     {
-        if (e.PropertyName == nameof(BluetoothLEService.Status))
+        BluetoothStatus = BluetoothLEService.Status;
+        BluetoothStatusImage = BluetoothLEService.Device?.State == DeviceState.Connected ? "bluetooth.png" : "bluetooth_disconected.png";
+    }
+    private void ReadBluetoothMessage()
+    {
+        if (BluetoothLEService.Message.StartsWith("ArduinoOutputs"))
         {
-            BluetoothStatus = BluetoothLEService.Status;
-            BluetoothStatusImage = BluetoothLEService.Device?.State == DeviceState.Connected ? "bluetooth.png" : "bluetooth_disconected.png";
-
-        } else if (e.PropertyName == nameof(BluetoothLEService.Message))
+            //ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
+            string[] message = BluetoothLEService.Message.Split(";");
+            CurrentTime = TimeSpan.Parse(message[1]);
+            LedStatusButtonSource = message[7].Contains("led on") ? "led_on.png" : "led_off.png";
+            var a = LedStatusButtonSource;
+        }
+        else if (BluetoothLEService.Message.StartsWith("led on"))
         {
-            //    ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
-      
-            if (BluetoothLEService.Message.StartsWith("ArduinoOutputs")) {
-                string[] message = BluetoothLEService.Message.Split(";");
-                CurrentTime = TimeSpan.Parse(message[1]);
-                LedStatusButtonSource = message[1].Contains("led on") ? "led_on.png" : "led_off.png";
-            } else if (BluetoothLEService.Message.StartsWith("led on"))
-            {
-                LedStatusButtonSource = "led_on.png";
-                BluetoothStatus = "Light changed succesfully";
-            }
-            else if (BluetoothLEService.Message.StartsWith("led off"))
-            {
-                LedStatusButtonSource =  "led_off.png";
-                BluetoothStatus = "Light changed succesfully";
-            }
-           // "Time changed"
-           // "Light changed"
-
-
+            LedStatusButtonSource = "led_on.png";
+            BluetoothStatus = "Light changed succesfully";
+        }
+        else if (BluetoothLEService.Message.StartsWith("led off"))
+        {
+            LedStatusButtonSource = "led_off.png";
+            BluetoothStatus = "Light changed succesfully";
         }
     }
-
-    [ObservableProperty]
-    ushort heartRateValue;
 
     public async Task ConnectToDeviceAsync()
     {
@@ -78,7 +66,7 @@ public partial class HomeViewModel : BaseViewModel
     
     }
 
-    private async void ChangeLed()
+    private async Task ChangeLed()
     {
         //TODO enable button only when receive data
         var command = LedStatusButtonSource.Contains("led_on") ? "led off" : "led on";
