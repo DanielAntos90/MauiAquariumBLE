@@ -46,8 +46,8 @@ public class BluetoothLEService
         Adapter.DeviceDiscovered += DeviceDiscovered;
         //Adapter.DeviceConnected += Adapter_DeviceConnected;
         Adapter.DeviceDisconnected += DeviceDisconnected;
-        Adapter.DeviceConnectionLost += Adapter_DeviceConnectionLost;
-        BluetoothLE.StateChanged += BluetoothLE_StateChanged;
+        Adapter.DeviceConnectionLost += DeviceConnectionLost;
+        BluetoothLE.StateChanged += AdapterStateChanged;
     }
 
     private async Task<bool> IsBluetoothAvailable()
@@ -74,6 +74,7 @@ public class BluetoothLEService
             }
         }
 #elif IOS
+#elif MACCATALYST
 #elif WINDOWS
 #endif
         return true;
@@ -198,7 +199,7 @@ public class BluetoothLEService
                 BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
                 await BluetoothConnectionCharacteristic.StartUpdatesAsync();
 
-                await Send("inputs");
+                await SendData("inputs");
                 Status = "Done";
 
             }
@@ -225,7 +226,7 @@ public class BluetoothLEService
         }
     }
 
-    public async Task Send(string message)
+    public async Task SendData(string message)
     {
         try
         {
@@ -238,7 +239,6 @@ public class BluetoothLEService
         }
     }
 
-    #region DeviceEventArgs
     private void DeviceDiscovered(object sender, DeviceEventArgs e)
     {
         if (!BluetoothDeviceList.Any(d => d.Id == e.Device.Id))
@@ -247,13 +247,14 @@ public class BluetoothLEService
         }
     }
 
-    private void Adapter_DeviceConnectionLost(object sender, DeviceErrorEventArgs e)
+    private void DeviceConnectionLost(object sender, DeviceErrorEventArgs e)
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            if (!Adapter.IsScanning && e.Device.Name != null)
+            if (!Adapter.IsScanning)
             {
-               // await ShowToastAsync($"{e.Device.Name} connection is lost.");
+                Status = $"{e.Device.Name ?? "Device"} connection is lost.";
+                await ShowToastAsync($"{e.Device.Name ?? "Device"} connection is lost.");
             }
         });
     }
@@ -262,26 +263,27 @@ public class BluetoothLEService
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            if (!Adapter.IsScanning && e.Device.Name != null)
+            if (!Adapter.IsScanning)
             {
-               // await ShowToastAsync($"{e.Device.Name} is disconnected.");
+                Status = $"{e.Device.Name ?? "Device"} is disconnected.";
+                await ShowToastAsync($"{e.Device.Name ?? "Device"} is disconnected.");
             }
         });
     }
-    #endregion DeviceEventArgs
 
-    #region BluetoothStateChangedArgs
-    private void BluetoothLE_StateChanged(object sender, BluetoothStateChangedArgs e)
+
+    private void AdapterStateChanged(object sender, BluetoothStateChangedArgs e)
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {
             if (!Adapter.IsScanning)
             {
-                //await ShowToastAsync($"Bluetooth state changed to {e.NewState}.");
+                Status = $"Bluetooth state changed to {e.NewState}.";
+                await ShowToastAsync($"Bluetooth state changed to {e.NewState}.");
             }
         });
     }
-    #endregion BluetoothStateChangedArgs
+
 
 #if ANDROID
     #region BluetoothPermissions
@@ -314,6 +316,7 @@ public class BluetoothLEService
         }
         return status;
     }
+
     #endregion BluetoothPermissions
 #elif IOS
 #elif WINDOWS
