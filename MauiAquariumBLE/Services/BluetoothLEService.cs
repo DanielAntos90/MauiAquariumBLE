@@ -190,15 +190,15 @@ public class BluetoothLEService
                 return;
             }
 
-            if (BluetoothConnectionCharacteristic != null && BluetoothConnectionCharacteristic.CanUpdate)
+             if (BluetoothConnectionCharacteristic != null && BluetoothConnectionCharacteristic.CanUpdate)
             {
                 await SecureStorage.Default.SetAsync("device_name", $"{Device.Name}");
                 await SecureStorage.Default.SetAsync("device_id", $"{Device.Id}");
-              
 
                 BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
                 await BluetoothConnectionCharacteristic.StartUpdatesAsync();
 
+                await Send("inputs");
                 Status = "Done";
 
             }
@@ -209,8 +209,7 @@ public class BluetoothLEService
             Status = $"Unable to connect to  device {Device?.Name}";
             await ShowToastAsync($"Unable to connect to  device {Device?.Name}");
         }
-
-        await Send("inputs");
+        
     }
 
     private void ReceivedData(object sender, CharacteristicUpdatedEventArgs e)
