@@ -33,10 +33,12 @@
                        Style="{StaticResource LargeLabel}"
                        HorizontalOptions="FillAndExpand"/>
 
-                <TimePicker Style="{StaticResource LargeLabel}" Time="{Binding CurrentTime}" Grid.Row="0" Grid.Column="1" Format="H:mm" />
+                <TimePicker Style="{StaticResource LargeLabel}" Format="H:mm" Time="{Binding CurrentTime}" Grid.Row="0" Grid.Column="1" />
+
+                <DatePicker Style="{StaticResource LargeLabel}" Format="d" Date="{Binding CurrentDate}" Grid.Row="1" Grid.Column="1"/>
 
                 <ImageButton Source="{Binding LedStatusButtonSource}"
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Grid.Column="1"
                             Command="{Binding OnLedStatusButtonClicked}"
                             HorizontalOptions="Center"
@@ -44,6 +46,21 @@
                             WidthRequest="120" 
                             HeightRequest="120"/>
 
+                <TimePicker Style="{StaticResource LargeLabel}" Format="H:mm" Time="{Binding LedOnTime}" Grid.Row="3" Grid.Column="0" />
+                <TimePicker Style="{StaticResource LargeLabel}" Format="H:mm" Time="{Binding LedOffTime}" Grid.Row="3" Grid.Column="1" />
+
+                <Slider Value="{Binding LedBrightness, Mode=TwoWay}" Grid.Row="4" Grid.Column="0" 
+                    Minimum="0"
+                    Maximum="100"
+                    ThumbColor="Green"
+                    WidthRequest="200"
+                    HeightRequest="50" />
+                <Label Text="{Binding LedBrightness}" Grid.Row="4" Grid.Column="1" />
+
+                <Picker Title="Select a number" Grid.Row="5" Grid.Column="0" 
+                    ItemsSource="{Binding Numbers}"
+                    SelectedItem="{Binding LedDimmingMinutes}">
+                </Picker>
 
             </Grid>
         </StackLayout>

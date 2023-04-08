@@ -1,8 +1,4 @@
-﻿
-using System.ComponentModel;
-using System.Windows.Input;
-
-namespace MauiBluetoothBLE.ViewModels;
+﻿namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HomeViewModel : BaseViewModel
 {
@@ -15,6 +11,20 @@ public partial class HomeViewModel : BaseViewModel
 
     [ObservableProperty]
     TimeSpan currentTime = TimeSpan.Parse("00:00");
+    [ObservableProperty]
+    TimeSpan ledOnTime = TimeSpan.Parse("00:00");
+    [ObservableProperty]
+    TimeSpan ledOffTime = TimeSpan.Parse("00:00");
+
+    [ObservableProperty]
+    int ledBrightness = 0;
+    [ObservableProperty]
+    int ledDimmingMinutes = 0;
+    [ObservableProperty]
+    public List<int> numbers = Enumerable.Range(0, 101).ToList();
+
+    [ObservableProperty]
+    DateTime currentDate = DateTime.ParseExact("01.01.1990", "dd.MM.yyyy", null);
 
     [ObservableProperty]
     string ledStatusButtonSource = "led_q.png";
@@ -45,6 +55,11 @@ public partial class HomeViewModel : BaseViewModel
             //ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
             string[] message = BluetoothLEService.Message.Split(";");
             CurrentTime = TimeSpan.Parse(message[1]);
+            CurrentDate = DateTime.ParseExact(message[2], "dd.MM.yyyy", null);
+            LedOnTime = TimeSpan.Parse(message[3]);
+            LedOffTime = TimeSpan.Parse(message[4]);
+            LedBrightness = int.TryParse(message[5], out var parsedValue) ? parsedValue : 0;
+            LedDimmingMinutes = int.TryParse(message[6], out parsedValue) ? parsedValue : 0;
             LedStatusButtonSource = message[7].Contains("led on") ? "led_on.png" : "led_off.png";
         }
         else if (BluetoothLEService.Message.StartsWith("led on"))
