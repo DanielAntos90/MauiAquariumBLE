@@ -3,17 +3,12 @@
 public partial class BaseViewModel : ObservableObject
 {
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsNotBusy))]
-    bool isBusy;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsNotScanning))]
-    bool isScanning;
+    [NotifyPropertyChangedFor(nameof(IsNotWorking))]
+    bool isWorking;
 
     [ObservableProperty]
     string title;
 
-    public bool IsNotBusy => !IsBusy;
-    public bool IsNotScanning => !isScanning;
+    public bool IsNotWorking => !IsWorking;
 }
 

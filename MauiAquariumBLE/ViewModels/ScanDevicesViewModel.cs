@@ -25,7 +25,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
 
     async Task GoToHomeViewAsync(BluetoothDevice deviceCandidate)
     {
-        if (IsScanning)
+        if (IsWorking)
         {
             await BluetoothLEService.ShowToastAsync($"Bluetooth adapter is scanning. Try again."); //TODO move to Utils
             return;
@@ -45,7 +45,8 @@ public partial class ScanDevicesViewModel : BaseViewModel
 
     async Task ScanDevicesAsync()
     {
-        IsScanning = true;
+        IsWorking = true;
+
         await BluetoothLEService.ScanForDevicesAsync();
         foreach (var deviceCandidate in BluetoothLEService.BluetoothDeviceList)
         {
@@ -54,16 +55,15 @@ public partial class ScanDevicesViewModel : BaseViewModel
         if (DeviceCandidates.Count == 0)
         {
             await BluetoothLEService.ShowToastAsync($"Unable to find nearby Bluetooth LE devices. Try again.");
-        } 
+        }
 
-        IsScanning = false;
-
+        IsWorking = false;
     }
 
 
     async Task CheckBluetoothAvailabilityAsync()
     {
-        if (IsScanning)
+        if (IsWorking)
         {
             return;
         }

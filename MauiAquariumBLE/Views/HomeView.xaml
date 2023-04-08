@@ -58,7 +58,11 @@
                 Style="{StaticResource MediumLabel}"
                 HorizontalOptions="CenterAndExpand"/>
 
-    
+        <ActivityIndicator Grid.ColumnSpan="2"
+                           IsRunning="{Binding IsWorking}"
+                           IsVisible="{Binding IsWorking}"
+                           HorizontalOptions="CenterAndExpand"
+                           VerticalOptions="StartAndExpand" />
 
     </Grid>
 </ContentPage>

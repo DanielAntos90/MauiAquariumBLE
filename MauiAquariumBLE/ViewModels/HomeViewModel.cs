@@ -61,12 +61,14 @@ public partial class HomeViewModel : BaseViewModel
 
     public async Task ConnectToDeviceAsync()
     {
+        IsWorking = true;
         await BluetoothLEService.ConnectToDeviceAsync();
         if(BluetoothLEService.Device != null && BluetoothLEService.Device.Name != null)
         {
             Title = BluetoothLEService.Device.Name;
         }
-    
+        IsWorking = false;
+
     }
 
     private async Task ChangeLed()

@@ -70,8 +70,8 @@
                 Grid.Column="0"
                 Margin="8"
                 Command="{Binding ScanNearbyDevicesAsyncCommand}"
-                IsEnabled="{Binding IsNotScanning}"
-                IsVisible="{Binding IsNotScanning}"
+                IsEnabled="{Binding IsNotWorking}"
+                IsVisible="{Binding IsNotWorking}"
                 Style="{StaticResource ButtonOutline}"
                 Text="Scan nearby devices" />
 
@@ -80,15 +80,14 @@
                 Grid.Column="1"
                 Margin="8"
                 Command="{Binding CheckBluetoothAvailabilityAsyncCommand}"
-                IsEnabled="{Binding IsNotScanning}"
-                IsVisible="{Binding IsNotScanning}"
+                IsEnabled="{Binding IsNotWorking}"
+                IsVisible="{Binding IsNotWorking}"
                 Style="{StaticResource ButtonOutline}"
                 Text="Check Bluetooth" />
 
-        <ActivityIndicator x:Name="HomePageActivityIndicator"
-                           Grid.ColumnSpan="2"
-                           IsRunning="{Binding IsScanning}"
-                           IsVisible="{Binding IsScanning}"
+        <ActivityIndicator Grid.ColumnSpan="2"
+                           IsRunning="{Binding IsWorking}"
+                           IsVisible="{Binding IsWorking}"
                            HorizontalOptions="CenterAndExpand"
                            VerticalOptions="StartAndExpand" />
     </Grid>
