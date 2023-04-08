@@ -35,7 +35,7 @@
                                    HorizontalOptions="CenterAndExpand"/>
 
                             <Label Grid.Row="1"
-                                   Text="Check Bluetooth."
+                                   Text="Select device you would like to connect."
                                    Style="{StaticResource LargeLabel}"
                                    HorizontalOptions="CenterAndExpand"/>
                         </Grid>
@@ -51,7 +51,7 @@
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer 
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ScanDevicesViewModel}}, 
-                                                  Path=GoToHeartRatePageAsyncCommand}"
+                                                  Path=GoToHomeViewAsyncCommand}"
                                         CommandParameter="{Binding .}"/>
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Padding="8">

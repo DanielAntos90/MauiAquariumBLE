@@ -24,7 +24,7 @@ public partial class HomeViewModel : BaseViewModel
 
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
-        Title = $"Home";
+        Title = "Home";
 
         BluetoothLEService = bluetoothLEService;
         BluetoothLEService.StatusChanged += ReadBluetoothStatus;
@@ -46,7 +46,6 @@ public partial class HomeViewModel : BaseViewModel
             string[] message = BluetoothLEService.Message.Split(";");
             CurrentTime = TimeSpan.Parse(message[1]);
             LedStatusButtonSource = message[7].Contains("led on") ? "led_on.png" : "led_off.png";
-            var a = LedStatusButtonSource;
         }
         else if (BluetoothLEService.Message.StartsWith("led on"))
         {
@@ -63,6 +62,10 @@ public partial class HomeViewModel : BaseViewModel
     public async Task ConnectToDeviceAsync()
     {
         await BluetoothLEService.ConnectToDeviceAsync();
+        if(BluetoothLEService.Device != null && BluetoothLEService.Device.Name != null)
+        {
+            Title = BluetoothLEService.Device.Name;
+        }
     
     }
 

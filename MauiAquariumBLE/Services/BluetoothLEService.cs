@@ -4,7 +4,7 @@ namespace MauiBluetoothBLE.Services;
 
 public class BluetoothLEService
 {
-    public BluetoothDevice SelectedBluetoothDevice { get; private set; } = new();
+    public BluetoothDevice SelectedBluetoothDevice { get; set; } = new();
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
     public IBluetoothLE BluetoothLE { get; private set; }
     public IAdapter Adapter { get; private set; }
@@ -109,6 +109,7 @@ public class BluetoothLEService
             await SetStoredDevice();
             Status = "Connecting to bluetooth device";
             Device = await Adapter.ConnectToKnownDeviceAsync(SelectedBluetoothDevice.Id);
+            Device.UpdateConnectionInterval(ConnectionInterval.High);
             Status = "Connection to device done";
         }
         catch (Exception ex)

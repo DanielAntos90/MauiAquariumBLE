@@ -6,7 +6,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
 
     public ObservableCollection<BluetoothDevice> DeviceCandidates { get; } = new();
 
-    public IAsyncRelayCommand GoToHeartRatePageAsyncCommand { get; }
+    public IAsyncRelayCommand GoToHomeViewAsyncCommand { get; }
     public IAsyncRelayCommand ScanNearbyDevicesAsyncCommand { get; }
     public IAsyncRelayCommand CheckBluetoothAvailabilityAsyncCommand { get; }
 
@@ -17,17 +17,17 @@ public partial class ScanDevicesViewModel : BaseViewModel
         BluetoothLEService = bluetoothLEService;
         DeviceCandidates = new ObservableCollection<BluetoothDevice>(BluetoothLEService.BluetoothDeviceList);
 
-        //GoToHeartRatePageAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHeartRatePageAsync(devicecandidate));
+        GoToHomeViewAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHomeViewAsync(devicecandidate));
 
         ScanNearbyDevicesAsyncCommand = new AsyncRelayCommand(ScanDevicesAsync);
         CheckBluetoothAvailabilityAsyncCommand = new AsyncRelayCommand(CheckBluetoothAvailabilityAsync);
     }
 
-    async Task GoToHeartRatePageAsync(BluetoothDevice deviceCandidate)
+    async Task GoToHomeViewAsync(BluetoothDevice deviceCandidate)
     {
         if (IsScanning)
         {
-            await BluetoothLEService.ShowToastAsync($"Bluetooth adapter is scanning. Try again.");
+            await BluetoothLEService.ShowToastAsync($"Bluetooth adapter is scanning. Try again."); //TODO move to Utils
             return;
         }
 
@@ -36,11 +36,11 @@ public partial class ScanDevicesViewModel : BaseViewModel
             return;
         }
 
-       // BluetoothLEService.SelectedBluetoothDevice = deviceCandidate;
+        BluetoothLEService.SelectedBluetoothDevice = deviceCandidate;
 
         Title = $"{deviceCandidate.Name}";
 
-        await Shell.Current.GoToAsync("//HeartRatePage", true);
+        await Shell.Current.GoToAsync("//HomeView", true);
     }
 
     async Task ScanDevicesAsync()
