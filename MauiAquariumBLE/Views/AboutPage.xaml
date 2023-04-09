@@ -8,27 +8,44 @@
 
     <ScrollView VerticalOptions="FillAndExpand">
         <VerticalStackLayout Padding="24">
-            <Grid RowDefinitions="Auto,Auto,*"
+            <Grid RowDefinitions="Auto,Auto,Auto,*"
+                  ColumnDefinitions="70,Auto,Auto,*"
                   RowSpacing="8"
                   HorizontalOptions="Fill"
                   VerticalOptions="Start">
 
-                <HorizontalStackLayout Grid.Row="0">
-                    <Label Text="{Binding Name}"
-                           VerticalOptions="Center"
-                           Style="{StaticResource MediumLabel}"/>
+                <StackLayout Grid.Row="0" Orientation="Horizontal">
 
-                    <Image HeightRequest="64"
-                           VerticalOptions="Center"
-                           Source="appiconfg.png}"/>
-                </HorizontalStackLayout>
+                    <Image 
+                        HeightRequest="64"
+                        VerticalOptions="Center"
+                        Source="appicon.jpg"/>
 
-                <Label Grid.Row="1"
-                       Text="{Binding Version, StringFormat='Version {0}'}"
-                       Style="{StaticResource MediumLabel}"/>
+                    <StackLayout Orientation="Vertical">
 
-                <Label Grid.Row="2"
-                       Text="{Binding Build, StringFormat='Build {0}'}"
+                        <Label 
+                            Text="{Binding Name}"
+                            Margin="10,0,0,0"
+                            VerticalOptions="Center"
+                            Style="{StaticResource MediumLabel}"/>
+
+                        <Label 
+                            Text="{Binding Version, StringFormat='Version {0}'}"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource MediumLabel}"/>
+
+                        <Label 
+                            Text="{Binding Build, StringFormat='Build {0}'}"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource MediumLabel}"/>
+
+                    </StackLayout>
+                </StackLayout>
+
+
+                <Label Grid.Row="4"
+                       Grid.ColumnSpan="4"
+                       Text=".Net MAUI cross-platform app using Plugin.BLE for controling aquarium using Bluetooth and Arduino controller."
                        Style="{StaticResource MediumLabel}"/>
 
             </Grid>
