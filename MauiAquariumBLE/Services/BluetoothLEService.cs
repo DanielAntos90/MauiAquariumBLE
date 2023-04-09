@@ -199,10 +199,7 @@ public class BluetoothLEService
 
                 BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
                 await BluetoothConnectionCharacteristic.StartUpdatesAsync();
-
-                await SendData("inputs");
                 Status = "Done";
-
             }
         }
         catch (Exception ex)

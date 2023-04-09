@@ -32,6 +32,9 @@ public partial class HomeViewModel : BaseViewModel
     [ObservableProperty]
     string bluetoothStatusImage = "bluetooth_disconected.png";
 
+    [ObservableProperty]
+    bool isDataReceived = false;
+
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = "Home";
@@ -72,23 +75,27 @@ public partial class HomeViewModel : BaseViewModel
             LedStatusButtonSource = "led_off.png";
             BluetoothStatus = "Light changed succesfully";
         }
+        IsDataReceived = true;
     }
 
     public async Task ConnectToDeviceAsync()
     {
-        IsWorking = true;
+        IsWorking = true; //TODO use custom event for IsWorking
+        IsDataReceived = false;
         await BluetoothLEService.ConnectToDeviceAsync();
         if(BluetoothLEService.Device != null && BluetoothLEService.Device.Name != null)
         {
             Title = BluetoothLEService.Device.Name;
+            await BluetoothLEService.SendData("inputs");
         }
+        
         IsWorking = false;
-
     }
 
     private async Task ChangeLed()
     {
         //TODO enable button only when receive data
+        IsDataReceived = false;
         var command = LedStatusButtonSource.Contains("led_on") ? "led off" : "led on";
         LedStatusButtonSource = "led_q.png";
         await BluetoothLEService.SendData($"turn {command}");

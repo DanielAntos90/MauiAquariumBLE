@@ -41,6 +41,7 @@
                             Grid.Row="2"
                             Grid.Column="1"
                             Command="{Binding OnLedStatusButtonClicked}"
+                            IsEnabled="{Binding IsDataReceived}"
                             HorizontalOptions="Center"
                             VerticalOptions="Center" 
                             WidthRequest="120" 
