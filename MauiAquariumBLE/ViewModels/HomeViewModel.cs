@@ -94,12 +94,9 @@ public partial class HomeViewModel : BaseViewModel
 
     private async Task ChangeLed()
     {
-        //TODO enable button only when receive data
         IsDataReceived = false;
         var command = LedStatusButtonSource.Contains("led_on") ? "led off" : "led on";
         LedStatusButtonSource = "led_q.png";
         await BluetoothLEService.SendData($"turn {command}");
-    }
-
-                            
+    }              
 }
