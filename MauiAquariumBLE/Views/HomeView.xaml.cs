@@ -32,4 +32,9 @@ public partial class HomeView : ContentPage
         base.OnDisappearing();
        
     }
+
+    private async void OnSliderValueChanged(object sender, ValueChangedEventArgs e)
+    {
+        await _viewModel.LedDimmingValueChange(e.NewValue);
+    }
 }

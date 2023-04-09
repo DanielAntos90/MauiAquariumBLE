@@ -1,8 +1,13 @@
-﻿namespace MauiBluetoothBLE.ViewModels;
+﻿using Microsoft.Maui.Controls;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace MauiBluetoothBLE.ViewModels;
 
 public partial class HomeViewModel : BaseViewModel
 {
     public IAsyncRelayCommand OnLedStatusButtonClicked { get; private set; }
+    public IAsyncRelayCommand OnUpdateTimeButtonClicked { get; private set; }
+    public IAsyncRelayCommand OnUpdateLightButtonClicked { get; private set; }
 
     BluetoothLEService BluetoothLEService;
 
@@ -44,6 +49,8 @@ public partial class HomeViewModel : BaseViewModel
         BluetoothLEService.MessageReceived += ReadBluetoothMessage;
 
         OnLedStatusButtonClicked = new AsyncRelayCommand(ChangeLed);
+        OnUpdateTimeButtonClicked = new AsyncRelayCommand(UpdateTime);
+        OnUpdateLightButtonClicked = new AsyncRelayCommand(UpdateLight);
     }
 
     private void ReadBluetoothStatus()
@@ -98,5 +105,27 @@ public partial class HomeViewModel : BaseViewModel
         var command = LedStatusButtonSource.Contains("led_on") ? "led off" : "led on";
         LedStatusButtonSource = "led_q.png";
         await BluetoothLEService.SendData($"turn {command}");
-    }              
+    }
+
+    private async Task UpdateTime()
+    {
+        IsDataReceived = false;
+        //bluetoothConnection.send("timedate;"+time+";"+String.join(".", date));
+        await BluetoothLEService.SendData($"timedate;{CurrentTime:hh\\:mm};{CurrentDate:dd.MM.yyyy}");
+    }
+
+    private async Task UpdateLight()
+    {
+        IsDataReceived = false;
+        //bluetoothConnection.send("light;"+ledOn+";"+ledOff+";"+brightness+";"+dim.replace(" min.",""));
+        await BluetoothLEService.SendData($"light;{LedOnTime:hh\\:mm};{LedOffTime:hh\\:mm};{LedBrightness};{LedDimmingMinutes}");
+    }
+
+    public async Task LedDimmingValueChange(double value)
+    {
+        if(ledStatusButtonSource.Contains("led_on"))
+        {
+            await BluetoothLEService.SendData($"dimming;{(long)value}");
+        }
+    }
 }

@@ -93,7 +93,9 @@
             HeightRequest="50"
             HorizontalOptions="CenterAndExpand" 
             VerticalOptions="CenterAndExpand"
-            Text="Update time"  />
+            Text="Update time"              
+            Command="{Binding OnUpdateTimeButtonClicked}"
+            IsEnabled="{Binding IsDataReceived}"/>
 
         <!-- 5th row -->
         <BoxView  
@@ -204,7 +206,8 @@
             Minimum="0"
             Maximum="100"
             ThumbColor="Green"
-            Value="{Binding LedBrightness, Mode=TwoWay}" />
+            Value="{Binding LedBrightness, Mode=TwoWay}" 
+            ValueChanged="OnSliderValueChanged"/>
         
         <!-- 11th row -->
         <Button 
@@ -215,7 +218,9 @@
             HeightRequest="50"
             HorizontalOptions="CenterAndExpand" 
             VerticalOptions="CenterAndExpand"
-            Text="Update light"/>
+            Text="Update light"
+            Command="{Binding OnUpdateLightButtonClicked}"
+            IsEnabled="{Binding IsDataReceived}"/>
 
         <!-- 12th row -->
         <BoxView  
