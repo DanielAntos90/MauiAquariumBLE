@@ -83,6 +83,9 @@ public class BluetoothLEService
     {
         if (!BluetoothLE.IsOn)
         {
+#if MACCATALYST
+            return true;
+#endif
             Status = "Bluetooth is off.";
             await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
             return false;
@@ -150,7 +153,11 @@ public class BluetoothLEService
                 SelectedBluetoothDevice.Id = Guid.Parse(device_id);
             } else
             {
+#if MACCATALYST
+                SelectedBluetoothDevice.Id = Uuids.HM10ServiceMACOS;
+#else
                 SelectedBluetoothDevice.Id = Uuids.HM10Service;
+#endif
             }
 
         }
