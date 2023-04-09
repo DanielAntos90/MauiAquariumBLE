@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MauiBluetoothBLE"
+             xmlns:converters="clr-namespace:MauiAquariumBLE.Converters"
              x:Class="MauiBluetoothBLE.App">
     
     <Application.Resources>
@@ -81,6 +82,9 @@
                 <Setter Property="CornerRadius" Value="10" />
                 <Setter Property="IsClippedToBounds" Value="True"/>
             </Style>
+
+            <converters:MinutesConverter x:Key="MinutesConverter" />
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
