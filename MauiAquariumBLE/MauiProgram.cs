@@ -20,6 +20,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddSingleton<BluetoothLEService>();
+        builder.Services.AddSingleton<NotificationService>();
 
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
         builder.Services.AddSingleton<IGeolocation>(Geolocation.Default);

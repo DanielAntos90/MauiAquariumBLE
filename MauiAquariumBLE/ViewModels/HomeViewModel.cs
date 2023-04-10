@@ -71,16 +71,17 @@ public partial class HomeViewModel : BaseViewModel
             LedBrightness = int.TryParse(message[5], out var parsedValue) ? parsedValue : 0;
             LedDimmingMinutes = int.TryParse(message[6], out parsedValue) ? parsedValue : 0;
             LedStatusButtonSource = message[7].Contains("led on") ? "led_on.png" : "led_off.png";
+            BluetoothStatus = "Data received";
         }
         else if (BluetoothLEService.Message.StartsWith("led on"))
         {
             LedStatusButtonSource = "led_on.png";
-            BluetoothStatus = "Light changed succesfully";
+            BluetoothStatus = "Light turned on";
         }
         else if (BluetoothLEService.Message.StartsWith("led off"))
         {
             LedStatusButtonSource = "led_off.png";
-            BluetoothStatus = "Light changed succesfully";
+            BluetoothStatus = "Light turned off";
         }
         IsDataReceived = true;
     }

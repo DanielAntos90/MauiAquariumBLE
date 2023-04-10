@@ -4,6 +4,7 @@ namespace MauiBluetoothBLE.Services;
 
 public class BluetoothLEService
 {
+    private NotificationService NotificationService;
     public BluetoothDevice SelectedBluetoothDevice { get; set; } = new();
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
     public IBluetoothLE BluetoothLE { get; private set; }
@@ -38,9 +39,11 @@ public class BluetoothLEService
         }
     }
 
-    public BluetoothLEService()
+    public BluetoothLEService(NotificationService notificationService)
     {
+        NotificationService = notificationService;
         BluetoothLE = CrossBluetoothLE.Current;
+        //TODO refactor create Adapter class
         Adapter = CrossBluetoothLE.Current.Adapter;
         Adapter.ScanTimeout = 4000;
         Adapter.DeviceDiscovered += DeviceDiscovered;
@@ -98,7 +101,7 @@ public class BluetoothLEService
         if (Adapter.IsScanning)
         {
             Status = "Bluetooth adapter is scanning";
-            await ShowToastAsync($"Bluetooth adapter is scanning. Try again.");
+            await NotificationService.ShowToastAsync("Bluetooth adapter is scanning. Try again.");
             return true;
         }
         return false;
@@ -118,7 +121,7 @@ public class BluetoothLEService
         catch (Exception ex)
         {
             Debug.WriteLine($"Unable connect to known Bluetooth LE device {Device.Name}. ERROR: {ex.Message}.");
-            await ShowToastAsync($"Unable connect to known Bluetooth LE device {Device.Name}.");
+            await NotificationService.ShowToastAsync($"Unable connect to known Bluetooth LE device {Device.Name}.");
         } 
     }
 
@@ -168,7 +171,7 @@ public class BluetoothLEService
         {
             if (Device != null && Device.State == DeviceState.Connected && Device.Id.Equals(SelectedBluetoothDevice.Id))
             {
-                await ShowToastAsync($"{Device.Name} is already connected.");
+                await NotificationService.ShowToastAsync($"{Device.Name} is already connected.");
                 return;
             } else
             {
@@ -183,7 +186,7 @@ public class BluetoothLEService
             else
             {
                 Status = $"{Device.Name} service connection failed";
-                await ShowToastAsync($"{Device.Name} service connection failed.");
+                await NotificationService.ShowToastAsync($"{Device.Name} service connection failed.");
                 return;
             }
 
@@ -194,7 +197,7 @@ public class BluetoothLEService
             else
             {
                 Status = $"{Device.Name} characteristics connection failed";
-                await ShowToastAsync($"{Device.Name} characteristics connection failed.");
+                await NotificationService.ShowToastAsync($"{Device.Name} characteristics connection failed.");
                 return;
             }
 
@@ -212,7 +215,7 @@ public class BluetoothLEService
         {
             Debug.WriteLine($"Unable to connect to  Bluetooth: {ex.Message}");
             Status = $"Unable to connect to  device {Device?.Name}";
-            await ShowToastAsync($"Unable to connect to  device {Device?.Name}");
+            await NotificationService.ShowToastAsync($"Unable to connect to  device {Device?.Name}");
         }
         
     }
@@ -224,7 +227,7 @@ public class BluetoothLEService
 
         if (message.Contains('\n'))
         {
-            Status = $"Data received";
+            Status = "Data received";
             MessageReceived?.Invoke();
             Message = null;
         }
@@ -234,12 +237,12 @@ public class BluetoothLEService
     {
         try
         {
-            Status = $"Requesting data.";
+            Status = "Requesting data";
             await BluetoothConnectionCharacteristic.WriteAsync(Encoding.UTF8.GetBytes(message));
         }
         catch (Exception)
         {
-            Status = $"Unable to request data.";
+            Status = "Unable to request data";
         }
     }
 
@@ -258,7 +261,7 @@ public class BluetoothLEService
             if (!Adapter.IsScanning)
             {
                 Status = $"{e.Device.Name ?? "Device"} connection is lost.";
-                await ShowToastAsync($"{e.Device.Name ?? "Device"} connection is lost.");
+                await NotificationService.ShowToastAsync($"{e.Device.Name ?? "Device"} connection is lost.");
             }
         });
     }
@@ -270,7 +273,7 @@ public class BluetoothLEService
             if (!Adapter.IsScanning)
             {
                 Status = $"{e.Device.Name ?? "Device"} is disconnected.";
-                await ShowToastAsync($"{e.Device.Name ?? "Device"} is disconnected.");
+                await NotificationService.ShowToastAsync($"{e.Device.Name ?? "Device"} is disconnected.");
             }
         });
     }
@@ -283,7 +286,7 @@ public class BluetoothLEService
             if (!Adapter.IsScanning)
             {
                 Status = $"Bluetooth state changed to {e.NewState}.";
-                await ShowToastAsync($"Bluetooth state changed to {e.NewState}.");
+                await NotificationService.ShowToastAsync($"Bluetooth state changed to {e.NewState}.");
             }
         });
     }
@@ -326,11 +329,5 @@ public class BluetoothLEService
 #elif WINDOWS
 #endif
 
-    public static async Task ShowToastAsync(string message)
-    {
-        ToastDuration toastDuration = ToastDuration.Long;
-        IToast toast = Toast.Make(message, toastDuration);
-        await toast.Show();
-    }
 }
 

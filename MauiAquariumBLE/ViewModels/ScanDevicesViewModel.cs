@@ -2,7 +2,8 @@
 
 public partial class ScanDevicesViewModel : BaseViewModel
 {
-    BluetoothLEService BluetoothLEService;
+    private BluetoothLEService BluetoothLEService;
+    private NotificationService NotificationService;
 
     public ObservableCollection<BluetoothDevice> DeviceCandidates { get; } = new();
 
@@ -10,11 +11,13 @@ public partial class ScanDevicesViewModel : BaseViewModel
     public IAsyncRelayCommand ScanNearbyDevicesAsyncCommand { get; }
     public IAsyncRelayCommand CheckBluetoothAvailabilityAsyncCommand { get; }
 
-    public ScanDevicesViewModel(BluetoothLEService bluetoothLEService)
+    public ScanDevicesViewModel(BluetoothLEService bluetoothLEService, NotificationService notificationService)
     {
         Title = $"Scan and select device";
 
         BluetoothLEService = bluetoothLEService;
+        NotificationService = notificationService;
+
         DeviceCandidates = new ObservableCollection<BluetoothDevice>(BluetoothLEService.BluetoothDeviceList);
 
         GoToHomeViewAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHomeViewAsync(devicecandidate));
@@ -27,7 +30,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
     {
         if (IsWorking)
         {
-            await BluetoothLEService.ShowToastAsync($"Bluetooth adapter is scanning. Try again."); //TODO move to Utils
+            await NotificationService.ShowToastAsync("Bluetooth adapter is scanning. Try again.");
             return;
         }
 
@@ -54,7 +57,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
         }
         if (DeviceCandidates.Count == 0)
         {
-            await BluetoothLEService.ShowToastAsync($"Unable to find nearby Bluetooth LE devices. Try again.");
+            await NotificationService.ShowToastAsync("Unable to find nearby Bluetooth LE devices. Try again.");
         }
 
         IsWorking = false;
@@ -70,6 +73,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
 
         try
         {
+            //TODO refactor
             if (!BluetoothLEService.BluetoothLE.IsAvailable)
             {
                 Debug.WriteLine($"Error: Bluetooth is missing.");
