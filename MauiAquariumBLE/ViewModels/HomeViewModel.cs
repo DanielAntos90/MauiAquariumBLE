@@ -136,7 +136,7 @@ public partial class HomeViewModel : BaseViewModel
 
     public async Task LedDimmingValueChange(double value)
     {
-        if(ledStatusButtonSource.Contains("led_on"))
+        if(ledStatusButtonSource.Contains("led_on") && IsDataReceived)
         {
             await BluetoothLEService.SendData($"dimming;{(long)value}");
         }
