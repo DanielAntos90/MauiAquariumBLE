@@ -3,30 +3,26 @@
 public partial class ScanDevicesViewModel : BaseViewModel
 {
     private BluetoothLEService BluetoothLEService;
-    private NotificationService NotificationService;
 
-    public ObservableCollection<BluetoothDevice> DeviceCandidates { get; } = new();
+    public ObservableCollection<BluetoothDevice> BluetoothDevices { get; } = new();
 
     public IAsyncRelayCommand GoToHomeViewAsyncCommand { get; }
     public IAsyncRelayCommand ScanNearbyDevicesAsyncCommand { get; }
     public IAsyncRelayCommand CheckBluetoothAvailabilityAsyncCommand { get; }
 
-    public ScanDevicesViewModel(BluetoothLEService bluetoothLEService, NotificationService notificationService)
+    public ScanDevicesViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Scan and select device";
 
         BluetoothLEService = bluetoothLEService;
-        NotificationService = notificationService;
 
-        DeviceCandidates = new ObservableCollection<BluetoothDevice>(BluetoothLEService.BluetoothDeviceList);
-
-        GoToHomeViewAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (devicecandidate) => await GoToHomeViewAsync(devicecandidate));
+        GoToHomeViewAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (BluetoothDevice) => await GoToHomeViewAsync(BluetoothDevice));
 
         ScanNearbyDevicesAsyncCommand = new AsyncRelayCommand(ScanDevicesAsync);
         CheckBluetoothAvailabilityAsyncCommand = new AsyncRelayCommand(CheckBluetoothAvailabilityAsync);
     }
 
-    async Task GoToHomeViewAsync(BluetoothDevice deviceCandidate)
+    async Task GoToHomeViewAsync(BluetoothDevice BluetoothDevice)
     {
         if (IsWorking)
         {
@@ -34,14 +30,12 @@ public partial class ScanDevicesViewModel : BaseViewModel
             return;
         }
 
-        if (deviceCandidate == null)
+        if (BluetoothDevice == null)
         {
             return;
         }
 
-        BluetoothLEService.SelectedBluetoothDevice = deviceCandidate;
-
-        Title = $"{deviceCandidate.Name}";
+        BluetoothLEService.SelectedBluetoothDevice = BluetoothDevice;
 
         await Shell.Current.GoToAsync("//HomeView", true);
     }
@@ -51,11 +45,16 @@ public partial class ScanDevicesViewModel : BaseViewModel
         IsWorking = true;
 
         await BluetoothLEService.ScanForDevicesAsync();
-        foreach (var deviceCandidate in BluetoothLEService.BluetoothDeviceList)
+        BluetoothDevices.Clear();
+
+        foreach (var bluetoothDevice in BluetoothLEService.BluetoothDeviceList)
         {
-            DeviceCandidates.Add(deviceCandidate);
+            if (!BluetoothDevices.Contains(bluetoothDevice))
+            {
+                BluetoothDevices.Add(bluetoothDevice);
+            }
         }
-        if (DeviceCandidates.Count == 0)
+        if (BluetoothDevices.Count == 0)
         {
             await NotificationService.ShowToastAsync("Unable to find nearby Bluetooth LE devices. Try again.");
         }
@@ -73,15 +72,12 @@ public partial class ScanDevicesViewModel : BaseViewModel
 
         try
         {
-            //TODO refactor
-            if (!BluetoothLEService.BluetoothLE.IsAvailable)
+            if (!await BluetoothLEService.IsBluetoothAvailable())
             {
-                Debug.WriteLine($"Error: Bluetooth is missing.");
-                await Shell.Current.DisplayAlert($"Bluetooth", $"Bluetooth is missing.", "OK");
                 return;
             }
 
-            if (BluetoothLEService.BluetoothLE.IsOn)
+            if (await BluetoothLEService.IsBluetoothOn())
             {
                 await Shell.Current.DisplayAlert($"Bluetooth is on", $"You are good to go.", "OK");
             }

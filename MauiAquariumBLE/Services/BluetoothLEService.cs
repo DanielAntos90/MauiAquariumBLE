@@ -53,7 +53,7 @@ public class BluetoothLEService
         BluetoothLE.StateChanged += AdapterStateChanged;
     }
 
-    private async Task<bool> IsBluetoothAvailable()
+    public async Task<bool> IsBluetoothAvailable()
     {
         if(!BluetoothLE.IsAvailable)
         {
@@ -82,7 +82,7 @@ public class BluetoothLEService
 #endif
         return true;
     }
-    private async Task<bool> IsBluetoothOn()
+    public async Task<bool> IsBluetoothOn()
     {
         if (!BluetoothLE.IsOn)
         {
