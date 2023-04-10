@@ -70,27 +70,21 @@ public partial class ScanDevicesViewModel : BaseViewModel
             return;
         }
 
-        try
-        {
-            if (!await BluetoothLEService.IsBluetoothAvailable())
-            {
-                return;
-            }
 
-            if (await BluetoothLEService.IsBluetoothOn())
-            {
-                await Shell.Current.DisplayAlert($"Bluetooth is on", $"You are good to go.", "OK");
-            }
-            else
-            {
-                await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
-            }
-        }
-        catch (Exception ex)
+        if (!await BluetoothLEService.IsBluetoothAvailable())
         {
-            Debug.WriteLine($"Unable to check Bluetooth availability: {ex.Message}");
-            await Shell.Current.DisplayAlert($"Unable to check Bluetooth availability", $"{ex.Message}.", "OK");
+            return;
         }
+
+        if (await BluetoothLEService.IsBluetoothOn())
+        {
+            await Shell.Current.DisplayAlert($"Bluetooth is on", $"You are good to go.", "OK");
+        }
+        else
+        {
+            await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
+        }
+
     }
 }
 

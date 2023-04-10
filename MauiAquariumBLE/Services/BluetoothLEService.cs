@@ -4,7 +4,6 @@ namespace MauiBluetoothBLE.Services;
 
 public class BluetoothLEService
 {
-    private NotificationService NotificationService;
     public BluetoothDevice SelectedBluetoothDevice { get; set; } = new();
     public List<BluetoothDevice> BluetoothDeviceList { get; private set; } = new List<BluetoothDevice>();
     public IBluetoothLE BluetoothLE { get; private set; }
@@ -39,9 +38,8 @@ public class BluetoothLEService
         }
     }
 
-    public BluetoothLEService(NotificationService notificationService)
+    public BluetoothLEService()
     {
-        NotificationService = notificationService;
         BluetoothLE = CrossBluetoothLE.Current;
         //TODO refactor create Adapter class
         Adapter = CrossBluetoothLE.Current.Adapter;
@@ -55,10 +53,20 @@ public class BluetoothLEService
 
     public async Task<bool> IsBluetoothAvailable()
     {
-        if(!BluetoothLE.IsAvailable)
+        try
         {
-            Debug.WriteLine($"Bluetooth is missing.");
-            await Shell.Current.DisplayAlert($"Bluetooth", $"Bluetooth is missing.", "OK");
+            if (!BluetoothLE.IsAvailable)
+            {
+                Debug.WriteLine($"Bluetooth is missing.");
+                await Shell.Current.DisplayAlert($"Bluetooth", $"Bluetooth is missing.", "OK");
+                return false;
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Bluetooth LE IsAvailable method failed. ERROR: {ex.Message}.");
+            await NotificationService.ShowToastAsync($"Unable get Bluetooth availabililty.");
             return false;
         }
         return true;
@@ -84,13 +92,23 @@ public class BluetoothLEService
     }
     public async Task<bool> IsBluetoothOn()
     {
-        if (!BluetoothLE.IsOn)
+        try
         {
+            if (!BluetoothLE.IsOn)
+            {
 #if MACCATALYST
-            return true;
+                return true;
 #endif
-            Status = "Bluetooth is off.";
-            await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
+                Status = "Bluetooth is off.";
+                await Shell.Current.DisplayAlert($"Bluetooth is not on", $"Please turn Bluetooth on and try again.", "OK");
+                return false;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to get Bluetooth adapter status. ERROR: {ex.Message}.");
+            await NotificationService.ShowToastAsync($"Unable to get Bluetooth adapter status.");
             return false;
         }
         return true;
@@ -98,45 +116,55 @@ public class BluetoothLEService
 
     private async Task<bool> IsScanning()
     {
-        if (Adapter.IsScanning)
+        try
         {
-            Status = "Bluetooth adapter is scanning";
-            await NotificationService.ShowToastAsync("Bluetooth adapter is scanning. Try again.");
-            return true;
+            if (Adapter.IsScanning)
+            {
+                Status = "Bluetooth adapter is scanning";
+                await NotificationService.ShowToastAsync("Bluetooth adapter is scanning. Try again.");
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Bluetooth LE IsScanning method failed. ERROR: {ex.Message}.");
+            await NotificationService.ShowToastAsync($"Unable get Bluetooth adapater scanning status.");
+            return false;
         }
         return false;
     }
     public async Task ScanAndConnectToKnownDeviceAsync()
     {
+        if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
+
+        await SetStoredDevice();
+        Status = "Connecting to bluetooth device";
+
         try
         {
-            if(!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
-
-            await SetStoredDevice();
-            Status = "Connecting to bluetooth device";
             Device = await Adapter.ConnectToKnownDeviceAsync(SelectedBluetoothDevice.Id);
             Device.UpdateConnectionInterval(ConnectionInterval.High);
             Status = "Connection to device done";
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Unable connect to known Bluetooth LE device {Device.Name}. ERROR: {ex.Message}.");
-            await NotificationService.ShowToastAsync($"Unable connect to known Bluetooth LE device {Device.Name}.");
+            Debug.WriteLine($"Unable connect to known Bluetooth LE device {Device?.Name}. ERROR: {ex.Message}.");
+            await NotificationService.ShowToastAsync($"Unable connect to known Bluetooth LE device {Device?.Name}.");
         } 
     }
 
     public async Task<List<BluetoothDevice>> ScanForDevicesAsync()
     {
+        if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
+
         try
         {
-            if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
-
             await Adapter.StartScanningForDevicesAsync();
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Unable to scan known Bluetooth LE devices: {ex.Message}.");
-            await Shell.Current.DisplayAlert($"Unable to scan known Bluetooth LE devices", $"{ex.Message}.", "OK");
+            Debug.WriteLine($"Scanning for Bluetooth LE devices failed. ERROR: {ex.Message}.");
+            await Shell.Current.DisplayAlert($"Scanning for Bluetooth LE devices failed", $"{ex.Message}.", "OK");
         }
 
         return BluetoothDeviceList;
@@ -144,9 +172,13 @@ public class BluetoothLEService
 
     private async Task SetStoredDevice()
     {
-
-        if (SelectedBluetoothDevice.Id.Equals(Guid.Empty))
+        try
         {
+            if (!SelectedBluetoothDevice.Id.Equals(Guid.Empty))
+            {
+                return;
+            }
+
             var device_name = await SecureStorage.Default.GetAsync("device_name");
             var device_id = await SecureStorage.Default.GetAsync("device_id");
 
@@ -154,14 +186,19 @@ public class BluetoothLEService
             {
                 SelectedBluetoothDevice.Name = device_name;
                 SelectedBluetoothDevice.Id = Guid.Parse(device_id);
-            } else
+            }
+            else
             {
                 SelectedBluetoothDevice.Id = Uuids.HM10Service;
 #if MACCATALYST
                 SelectedBluetoothDevice.Id = Uuids.HM10ServiceMACOS;
 #endif
             }
-
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Bluetooth device selection failed {Device?.Name}. ERROR: {ex.Message}.");
+            await NotificationService.ShowToastAsync($"Bluetooth device selection failed {Device?.Name}.");
         }
     }
 
@@ -240,8 +277,9 @@ public class BluetoothLEService
             Status = "Requesting data";
             await BluetoothConnectionCharacteristic.WriteAsync(Encoding.UTF8.GetBytes(message));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Debug.WriteLine($"Unable to request data: {ex.Message}");
             Status = "Unable to request data";
         }
     }
