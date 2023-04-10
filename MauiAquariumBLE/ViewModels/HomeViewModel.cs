@@ -60,6 +60,11 @@ public partial class HomeViewModel : BaseViewModel
     {
         BluetoothStatus = BluetoothLEService.Status;
         BluetoothStatusImage = BluetoothLEService.Device?.State == DeviceState.Connected ? "bluetooth.png" : "bluetooth_disconected.png";
+
+        if(BluetoothLEService.Device?.State != DeviceState.Connected)
+        {
+            IsDataReceived = false;
+        }
     }
     private void ReadBluetoothMessage()
     {
