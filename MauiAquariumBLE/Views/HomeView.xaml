@@ -88,7 +88,7 @@
             Grid.Row="{OnPlatform 1, Android=3}"
             Grid.Column="{OnPlatform 3, Android=0}"
             Grid.ColumnSpan="{OnPlatform 1, Android=20}"
-            Grid.RowSpan="{OnPlatform 2, Android=0}"
+            Grid.RowSpan="{OnPlatform 2, Android=1}"
             WidthRequest="120"
             HeightRequest="50"
             HorizontalOptions="CenterAndExpand" 

@@ -153,10 +153,9 @@ public class BluetoothLEService
                 SelectedBluetoothDevice.Id = Guid.Parse(device_id);
             } else
             {
+                SelectedBluetoothDevice.Id = Uuids.HM10Service;
 #if MACCATALYST
                 SelectedBluetoothDevice.Id = Uuids.HM10ServiceMACOS;
-#else
-                SelectedBluetoothDevice.Id = Uuids.HM10Service;
 #endif
             }
 

@@ -90,12 +90,15 @@ public partial class HomeViewModel : BaseViewModel
         IsWorking = true; //TODO use custom event for IsWorking
         IsDataReceived = false;
         await BluetoothLEService.ConnectToDeviceAsync();
-        if(BluetoothLEService.Device != null && BluetoothLEService.Device.Name != null)
+        if(BluetoothLEService.Device.Name != null)
         {
             Title = BluetoothLEService.Device.Name;
+        }
+        if (BluetoothLEService.Device != null)
+        {
             await BluetoothLEService.SendData("inputs");
         }
-        
+
         IsWorking = false;
     }
 
