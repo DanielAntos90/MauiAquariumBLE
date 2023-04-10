@@ -25,6 +25,9 @@ public partial class HomeViewModel : BaseViewModel
     int ledBrightness = 0;
     [ObservableProperty]
     int ledDimmingMinutes = 0;
+    // used for recognition if slider was modified by user or application
+    public bool IsChangedByUser = false;
+
     [ObservableProperty]
     public List<int> numbers = Enumerable.Range(0, 101).ToList();
 
@@ -60,6 +63,7 @@ public partial class HomeViewModel : BaseViewModel
     }
     private void ReadBluetoothMessage()
     {
+        IsChangedByUser = false;
         if (BluetoothLEService.Message.StartsWith("ArduinoOutputs"))
         {
             //ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n

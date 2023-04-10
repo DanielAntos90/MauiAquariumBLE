@@ -35,6 +35,16 @@ public partial class HomeView : ContentPage
 
     private async void OnSliderValueChanged(object sender, ValueChangedEventArgs e)
     {
-        await _viewModel.LedDimmingValueChange(e.NewValue);
+
+        if (_viewModel.IsChangedByUser)
+        {
+            await _viewModel.LedDimmingValueChange(e.NewValue);
+            // The value change was caused by user interaction
+            // Do something while the user is dragging the thumb
+        } else
+        {
+            _viewModel.IsChangedByUser = true;
+        }
+        
     }
 }
