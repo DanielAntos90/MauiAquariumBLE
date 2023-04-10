@@ -46,15 +46,15 @@
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:BluetoothDevice"> 
-                        <Grid Padding="10">
-                            <Frame Style="{StaticResource CardView}">
+                        <Grid Padding="5">
+                            <Frame>
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer 
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ScanDevicesViewModel}}, 
                                                   Path=GoToHomeViewAsyncCommand}"
                                         CommandParameter="{Binding .}"/>
                                 </Frame.GestureRecognizers>
-                                <VerticalStackLayout Padding="8">
+                                <VerticalStackLayout >
                                     <Label Style="{StaticResource BaseLabel}" Text="{Binding Name}" />
                                     <Label Style="{StaticResource MicroLabel}" Text="{Binding Id}" />
                                 </VerticalStackLayout>
@@ -72,7 +72,6 @@
                 Command="{Binding ScanNearbyDevicesAsyncCommand}"
                 IsEnabled="{Binding IsNotWorking}"
                 IsVisible="{Binding IsNotWorking}"
-                Style="{StaticResource ButtonOutline}"
                 Text="Scan nearby devices" />
 
         <Button x:Name="CheckBluetoothButton"
@@ -82,7 +81,6 @@
                 Command="{Binding CheckBluetoothAvailabilityAsyncCommand}"
                 IsEnabled="{Binding IsNotWorking}"
                 IsVisible="{Binding IsNotWorking}"
-                Style="{StaticResource ButtonOutline}"
                 Text="Check Bluetooth" />
 
         <ActivityIndicator Grid.ColumnSpan="2"
