@@ -31,6 +31,12 @@
 		<DefaultLanguage>en-US</DefaultLanguage>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+	  <CreatePackage>false</CreatePackage>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
+	  <CreatePackage>false</CreatePackage>
+	</PropertyGroup>
 	<ItemGroup>
 		<!-- App Icon -->
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#2C6FCF" />
@@ -52,6 +58,8 @@
 	  <None Remove="Resources\Fonts\fa-brands-400.ttf" />
 	  <None Remove="Resources\Fonts\fa_solid.ttf" />
 	  <None Remove="Resources\Images\appiconfg.svg" />
+	  <None Remove="Platforms\MacCatalyst\Services\" />
+	  <None Remove="Platforms\iOS\Services\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -84,6 +92,10 @@
 	  <PackageReference Include="Plugin.BLE" Version="3.0.0-beta.2" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Platforms\MacCatalyst\Services\" />
+	  <Folder Include="Platforms\iOS\Services\" />
+	</ItemGroup>
 	<ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadDebuggerTimeoutExceptionMauiXAMLBluetoothLEHideInfoBar="True" /></VisualStudio></ProjectExtensions>
 
 </Project>

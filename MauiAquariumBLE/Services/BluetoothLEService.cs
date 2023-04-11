@@ -71,7 +71,7 @@ public class BluetoothLEService
         }
         return true;
     }
-    private async Task<bool> IsPermissionGranded()
+    private bool IsPermissionGranded()
     {
 #if ANDROID
         PermissionStatus permissionStatus = await CheckBluetoothPermissions();
@@ -135,7 +135,7 @@ public class BluetoothLEService
     }
     public async Task ScanAndConnectToKnownDeviceAsync()
     {
-        if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
+        if (!await IsBluetoothAvailable() || !IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
 
         await SetStoredDevice();
         Status = "Connecting to bluetooth device";
@@ -155,7 +155,7 @@ public class BluetoothLEService
 
     public async Task<List<BluetoothDevice>> ScanForDevicesAsync()
     {
-        if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
+        if (!await IsBluetoothAvailable() || !IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
 
         try
         {
