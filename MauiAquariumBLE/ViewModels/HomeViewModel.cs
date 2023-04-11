@@ -111,7 +111,7 @@ public partial class HomeViewModel : BaseViewModel
         IsDataReceived = false;
         IsReloadButtonEnabled = false;
         await BluetoothLEService.ConnectToDeviceAsync();
-        if(BluetoothLEService.Device.Name != null)
+        if(BluetoothLEService.Device?.Name != null)
         {
             Title = BluetoothLEService.Device.Name;
         }

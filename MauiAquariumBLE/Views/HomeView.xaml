@@ -10,14 +10,14 @@
 
     <Grid 
         ColumnSpacing="10"
-        RowSpacing="{OnPlatform WinUI=4,  MacCatalyst=10, Android=10}"
+        RowSpacing="{OnPlatform WinUI=4,  MacCatalyst=10, Android=10, iOS=10}"
         BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="{OnPlatform WinUI=40,  Android=50}"/>
             <RowDefinition />
             <RowDefinition />
             <RowDefinition Height="{OnPlatform WinUI=0, MacCatalyst=0}"/>
-            <RowDefinition Height="{OnPlatform WinUI=20, MacCatalyst=0, Android=10}"/>
+            <RowDefinition Height="{OnPlatform WinUI=20, MacCatalyst=0, Android=10, iOS=10}"/>
             <RowDefinition Height="{OnPlatform WinUI=40,  Android=50}"/>
             <RowDefinition />
             <RowDefinition />
@@ -25,14 +25,14 @@
             <RowDefinition />
             <RowDefinition Height="{OnPlatform WinUI=0, MacCatalyst=0}"/>
             <RowDefinition Height="{OnPlatform WinUI=0, MacCatalyst=0}"/>
-            <RowDefinition Height="{OnPlatform WinUI=20, MacCatalyst=0, Android=10}"/>
+            <RowDefinition Height="{OnPlatform WinUI=20, MacCatalyst=0, Android=10, iOS=10}"/>
             <RowDefinition Height="{OnPlatform WinUI=40, Android=50}"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="70"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="{OnPlatform Android=50}"/>
+            <ColumnDefinition Width="{OnPlatform Android=50, iOS=50}"/>
         </Grid.ColumnDefinitions>
 
         <!-- 1st row -->
@@ -85,10 +85,10 @@
 
         <!-- 4th row -->
         <Button 
-            Grid.Row="{OnPlatform 1, Android=3}"
-            Grid.Column="{OnPlatform 3, Android=0}"
-            Grid.ColumnSpan="{OnPlatform 1, Android=20}"
-            Grid.RowSpan="{OnPlatform 2, Android=1}"
+            Grid.Row="{OnPlatform 1, Android=3, iOS=3}"
+            Grid.Column="{OnPlatform 3, Android=0, iOS=0}"
+            Grid.ColumnSpan="{OnPlatform 1, Android=20, iOS= 20}"
+            Grid.RowSpan="{OnPlatform 2, Android=1, iOS=1}"
             WidthRequest="120"
             HeightRequest="50"
             HorizontalOptions="CenterAndExpand" 
@@ -178,11 +178,11 @@
 
         <!-- 9th row -->
         <ImageButton 
-            Grid.Row="{OnPlatform 6, Android=9}"
-            Grid.Column="{OnPlatform 3, Android=2}"
-            Grid.RowSpan="{OnPlatform 3, Android=2}"
-            HorizontalOptions="{OnPlatform CenterAndExpand, MacCatalyst=Fill}"
-            VerticalOptions="{OnPlatform CenterAndExpand, MacCatalyst=Fill}"
+            Grid.Row="{OnPlatform 6, Android=9, iOS=9}"
+            Grid.Column="{OnPlatform 3, Android=2, iOS=2}"
+            Grid.RowSpan="{OnPlatform 3, Android=2, iOS=2}"
+            HorizontalOptions="{OnPlatform CenterAndExpand, MacCatalyst=Fill, iOS=Fill}"
+            VerticalOptions="{OnPlatform CenterAndExpand, MacCatalyst=Fill, iOS=Fill}"
             Source="{Binding LedStatusButtonSource}"
             Command="{Binding OnLedStatusButtonClicked}"
             IsEnabled="{Binding IsDataReceived}"/>
@@ -212,8 +212,8 @@
         
         <!-- 11th row -->
         <Button 
-            Grid.Row="{OnPlatform 9, Android=11}" 
-            Grid.Column="{OnPlatform 3, Android=0}"
+            Grid.Row="{OnPlatform 9, Android=11, iOS=11}" 
+            Grid.Column="{OnPlatform 3, Android=0, iOS=0}"
             Grid.ColumnSpan="20"
             WidthRequest="120"
             HeightRequest="50"
