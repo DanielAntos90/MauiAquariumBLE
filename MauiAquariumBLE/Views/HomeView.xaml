@@ -171,7 +171,8 @@
             HorizontalOptions="StartAndExpand" 
             VerticalOptions="CenterAndExpand"
             ItemsSource="{Binding Numbers}"
-            SelectedItem="{Binding LedDimmingMinutes}" 
+            ItemDisplayBinding="{Binding Path=., StringFormat='{0} min.'}"
+            SelectedItem="{Binding LedDimmingMinutes}"
             Style="{StaticResource MediumLabel}">
         </Picker>
 
@@ -252,7 +253,16 @@
             Text="{Binding BluetoothStatus}"
             Style="{StaticResource MediumLabel}"/>
 
-   
+
+        <Button 
+            Grid.Row="13"
+            Grid.Column="3"
+            HorizontalOptions="CenterAndExpand" 
+            VerticalOptions="CenterAndExpand"
+            Text="Reconnect"
+            
+            IsEnabled="{Binding IsReloadButtonEnabled}"
+            Command="{Binding OnReconnectButtonClicked}"/>
 
     </Grid>
 </ContentPage>
