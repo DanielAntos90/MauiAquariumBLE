@@ -257,12 +257,12 @@
         <Button 
             Grid.Row="13"
             Grid.Column="3"
+            Margin="3" 
             HorizontalOptions="CenterAndExpand" 
             VerticalOptions="CenterAndExpand"
             Text="Reconnect"
-            
-            IsEnabled="{Binding IsReloadButtonEnabled}"
-            Command="{Binding OnReconnectButtonClicked}"/>
+            Command="{Binding OnReconnectButtonClicked}"
+            IsEnabled="{Binding IsReloadButtonEnabled}"/>
 
     </Grid>
 </ContentPage>

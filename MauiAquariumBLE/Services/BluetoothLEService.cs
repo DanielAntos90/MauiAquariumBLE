@@ -65,13 +65,14 @@ public class BluetoothLEService
         }
         catch (Exception ex)
         {
+            Status = "Unable to check bluetooth availability";
             Debug.WriteLine($"Bluetooth LE IsAvailable method failed. ERROR: {ex.Message}.");
             await NotificationService.ShowToastAsync($"Unable get Bluetooth availabililty.");
             return false;
         }
         return true;
     }
-    private bool IsPermissionGranded()
+    private async Task<bool> IsPermissionGranded()
     {
 #if ANDROID
         PermissionStatus permissionStatus = await CheckBluetoothPermissions();
@@ -107,6 +108,7 @@ public class BluetoothLEService
         }
         catch (Exception ex)
         {
+            Status = "Unable to get adapter status";
             Debug.WriteLine($"Unable to get Bluetooth adapter status. ERROR: {ex.Message}.");
             await NotificationService.ShowToastAsync($"Unable to get Bluetooth adapter status.");
             return false;
@@ -127,6 +129,7 @@ public class BluetoothLEService
         }
         catch (Exception ex)
         {
+            Status = "Unable to get scanning status";
             Debug.WriteLine($"Bluetooth LE IsScanning method failed. ERROR: {ex.Message}.");
             await NotificationService.ShowToastAsync($"Unable get Bluetooth adapater scanning status.");
             return false;
@@ -135,7 +138,7 @@ public class BluetoothLEService
     }
     public async Task ScanAndConnectToKnownDeviceAsync()
     {
-        if (!await IsBluetoothAvailable() || !IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
+        if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return; }
 
         await SetStoredDevice();
         Status = "Connecting to bluetooth device";
@@ -148,6 +151,7 @@ public class BluetoothLEService
         }
         catch (Exception ex)
         {
+            Status = "Unable connect to device";
             Debug.WriteLine($"Unable connect to known Bluetooth LE device {Device?.Name}. ERROR: {ex.Message}.");
             await NotificationService.ShowToastAsync($"Unable connect to known Bluetooth LE device {Device?.Name}.");
         } 
@@ -155,7 +159,7 @@ public class BluetoothLEService
 
     public async Task<List<BluetoothDevice>> ScanForDevicesAsync()
     {
-        if (!await IsBluetoothAvailable() || !IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
+        if (!await IsBluetoothAvailable() || !await IsPermissionGranded() || !await IsBluetoothOn() || await IsScanning()) { return null; }
 
         try
         {
@@ -163,6 +167,7 @@ public class BluetoothLEService
         }
         catch (Exception ex)
         {
+            Status = "Scanning for Bluetooth LE devices failed";
             Debug.WriteLine($"Scanning for Bluetooth LE devices failed. ERROR: {ex.Message}.");
             await Shell.Current.DisplayAlert($"Scanning for Bluetooth LE devices failed", $"{ex.Message}.", "OK");
         }
@@ -197,6 +202,7 @@ public class BluetoothLEService
         }
         catch (Exception ex)
         {
+            Status = "Bluetooth device selection failed";
             Debug.WriteLine($"Bluetooth device selection failed {Device?.Name}. ERROR: {ex.Message}.");
             await NotificationService.ShowToastAsync($"Bluetooth device selection failed {Device?.Name}.");
         }
@@ -215,7 +221,7 @@ public class BluetoothLEService
                 await ScanAndConnectToKnownDeviceAsync();
             }
 
-            if (Device.State == DeviceState.Connected)
+             if (Device.State == DeviceState.Connected)
             {
                 BluetoothConnectionService = await Device.GetServiceAsync(Uuids.TISensorTagSmartKeys);
                 Status = "Bluetooth device connected";
@@ -310,6 +316,22 @@ public class BluetoothLEService
         {
             if (!Adapter.IsScanning)
             {
+                try
+                {
+                    await Adapter.DisconnectDeviceAsync(Device);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Already disconnected: {ex.Message}");
+                }
+                
+                Device?.Dispose();
+                Device = null;
+                BluetoothConnectionCharacteristic?.StopUpdatesAsync();
+                BluetoothConnectionCharacteristic = null;
+                BluetoothConnectionService?.Dispose();
+                BluetoothConnectionService = null;
+
                 Status = $"{e.Device.Name ?? "Device"} is disconnected.";
                 await NotificationService.ShowToastAsync($"{e.Device.Name ?? "Device"} is disconnected.");
             }

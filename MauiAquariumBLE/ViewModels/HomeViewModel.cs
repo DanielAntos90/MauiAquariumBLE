@@ -58,7 +58,7 @@ public partial class HomeViewModel : BaseViewModel
         OnLedStatusButtonClicked = new AsyncRelayCommand(ChangeLed);
         OnUpdateTimeButtonClicked = new AsyncRelayCommand(UpdateTime);
         OnUpdateLightButtonClicked = new AsyncRelayCommand(UpdateLight);
-        OnReconnectButtonClicked = new AsyncRelayCommand(ConnectToDeviceAsync, () => IsReloadButtonEnabled);
+        OnReconnectButtonClicked = new AsyncRelayCommand(ConnectToDeviceAsync);
     }
 
     private void ReadBluetoothStatus()
@@ -71,14 +71,14 @@ public partial class HomeViewModel : BaseViewModel
             IsDataReceived = false;
             if (!IsWorking)
             {
-               // IsReloadButtonEnabled = true;
+                IsReloadButtonEnabled = true;
             }
-            
         }
     }
     private void ReadBluetoothMessage()
     {
         IsChangedByUser = false;
+        IsReloadButtonEnabled = false;
         if (BluetoothLEService.Message.StartsWith("ArduinoOutputs"))
         {
             //ArduinoOutputs;22:27;30.03.2023;10:00;19:00;42;42;led off\n
