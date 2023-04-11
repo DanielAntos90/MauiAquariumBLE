@@ -8,6 +8,7 @@ public partial class HomeViewModel : BaseViewModel
     public IAsyncRelayCommand OnLedStatusButtonClicked { get; private set; }
     public IAsyncRelayCommand OnUpdateTimeButtonClicked { get; private set; }
     public IAsyncRelayCommand OnUpdateLightButtonClicked { get; private set; }
+    public IAsyncRelayCommand OnReconnectButtonClicked { get; private set; }
 
     BluetoothLEService BluetoothLEService;
 
@@ -43,6 +44,9 @@ public partial class HomeViewModel : BaseViewModel
     [ObservableProperty]
     bool isDataReceived = false;
 
+    [ObservableProperty]
+    bool isReloadButtonEnabled = false;
+
     public HomeViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = "Home";
@@ -54,6 +58,7 @@ public partial class HomeViewModel : BaseViewModel
         OnLedStatusButtonClicked = new AsyncRelayCommand(ChangeLed);
         OnUpdateTimeButtonClicked = new AsyncRelayCommand(UpdateTime);
         OnUpdateLightButtonClicked = new AsyncRelayCommand(UpdateLight);
+        OnReconnectButtonClicked = new AsyncRelayCommand(ConnectToDeviceAsync, () => IsReloadButtonEnabled);
     }
 
     private void ReadBluetoothStatus()
@@ -64,6 +69,11 @@ public partial class HomeViewModel : BaseViewModel
         if(BluetoothLEService.Device?.State != DeviceState.Connected)
         {
             IsDataReceived = false;
+            if (!IsWorking)
+            {
+               // IsReloadButtonEnabled = true;
+            }
+            
         }
     }
     private void ReadBluetoothMessage()
@@ -99,6 +109,7 @@ public partial class HomeViewModel : BaseViewModel
     {
         IsWorking = true; //TODO use custom event for IsWorking
         IsDataReceived = false;
+        IsReloadButtonEnabled = false;
         await BluetoothLEService.ConnectToDeviceAsync();
         if(BluetoothLEService.Device.Name != null)
         {

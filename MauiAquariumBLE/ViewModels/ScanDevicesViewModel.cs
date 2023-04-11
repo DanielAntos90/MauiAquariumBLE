@@ -13,7 +13,7 @@ public partial class ScanDevicesViewModel : BaseViewModel
     public ScanDevicesViewModel(BluetoothLEService bluetoothLEService)
     {
         Title = $"Scan and select device";
-
+ 
         BluetoothLEService = bluetoothLEService;
 
         GoToHomeViewAsyncCommand = new AsyncRelayCommand<BluetoothDevice>(async (BluetoothDevice) => await GoToHomeViewAsync(BluetoothDevice));
