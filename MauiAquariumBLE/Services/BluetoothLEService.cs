@@ -246,12 +246,12 @@ public class BluetoothLEService
 
              if (BluetoothConnectionCharacteristic != null && BluetoothConnectionCharacteristic.CanUpdate)
             {
-                await SecureStorage.Default.SetAsync("device_name", $"{Device.Name}");
-                await SecureStorage.Default.SetAsync("device_id", $"{Device.Id}");
-
                 BluetoothConnectionCharacteristic.ValueUpdated += ReceivedData;
                 await BluetoothConnectionCharacteristic.StartUpdatesAsync();
                 Status = "Done";
+
+                await SecureStorage.Default.SetAsync("device_name", $"{Device.Name}");
+                await SecureStorage.Default.SetAsync("device_id", $"{Device.Id}");
             }
         }
         catch (Exception ex)
